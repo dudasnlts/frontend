@@ -2,6 +2,7 @@
   <main class="support-portal">
     <div class="content-wrapper">
       
+      <!-- Navegação Superior -->
       <nav class="top-nav">
         <div class="logo">Support<span>Ivy</span></div>
         <div class="nav-status">
@@ -10,17 +11,37 @@
         </div>
       </nav>
 
+      <!-- Cabeçalho com Busca Inteligente -->
       <header class="hero-section">
         <h1>Central de Suporte</h1>
         <p>Encontre soluções rápidas ou fale com nossa equipe de especialistas.</p>
         
         <div class="search-bar">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" placeholder="Como podemos ajudar você hoje?">
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            @focus="showSuggestions = true"
+            placeholder="Como podemos ajudar você hoje?"
+          >
+          
+          <!-- Menu de Sugestões -->
+          <div v-if="showSuggestions && filteredSuggestions.length > 0" class="suggestions-dropdown">
+            <div 
+              v-for="sugestao in filteredSuggestions" 
+              :key="sugestao" 
+              class="suggestion-item"
+              @click="selecionarSugestao(sugestao)"
+            >
+              {{ sugestao }}
+            </div>
+          </div>
         </div>
       </header>
 
+      <!-- Canais de Atendimento -->
       <section class="channels-grid">
+        <!-- WhatsApp -->
         <div class="channel-card primary" @click="abrirWhatsApp">
           <div class="card-header">
             <div class="icon-box">
@@ -38,6 +59,7 @@
           </div>
         </div>
 
+        <!-- E-mail -->
         <div class="channel-card" @click="enviarEmail">
           <div class="card-header">
             <div class="icon-box secondary">
@@ -55,6 +77,7 @@
         </div>
       </section>
 
+      <!-- Autoatendimento -->
       <section class="self-service">
         <h2 class="section-title">Gerenciamento de Conta</h2>
         <div class="actions-list">
@@ -75,10 +98,80 @@
           </div>
         </div>
       </section>
-
     </div>
   </main>
 </template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+
+// --- CONFIGURAÇÕES DOS DADOS ---
+const dadosEmpresa = {
+  whatsapp: "5511999999999", 
+  email: "suporte@supportivy.com",
+  urlPedidos: "/minha-conta/pedidos",
+  urlTrocas: "/trocas"
+};
+
+// --- ESTADOS REATIVOS ---
+const searchQuery = ref('');
+const showSuggestions = ref(false);
+const listaSugestoes = [
+  "Como rastrear meu pedido?",
+  "Segunda via de nota fiscal",
+  "Esqueci minha senha de acesso",
+  "Política de trocas e devoluções",
+  "Prazos de entrega para minha região",
+  "Quero cancelar um pedido"
+];
+
+// --- LÓGICA DE FILTRO DA BUSCA ---
+const filteredSuggestions = computed(() => {
+  if (!searchQuery.value) return listaSugestoes;
+  return listaSugestoes.filter(item => 
+    item.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
+const selecionarSugestao = (texto) => {
+  searchQuery.value = texto;
+  showSuggestions.value = false;
+};
+
+// --- AÇÕES PRINCIPAIS ---
+
+// Abre o WhatsApp com uma mensagem inicial
+const abrirWhatsApp = () => {
+  const msg = encodeURIComponent("Olá! Gostaria de falar com o suporte da SupportIvy.");
+  window.open(`https://wa.me/${dadosEmpresa.whatsapp}?text=${msg}`, '_blank');
+};
+
+// Envia o e-mail pegando o assunto digitado na barra de busca
+const enviarEmail = () => {
+  const destinatario = dadosEmpresa.email;
+  const assunto = encodeURIComponent("Suporte Ivy - Nova Solicitação de Ticket");
+  
+  // Corpo do email preenchido automaticamente com o texto da busca
+  const mensagemBusca = searchQuery.value ? `Dúvida do Cliente: ${searchQuery.value}` : "Dúvida Geral";
+  const corpo = encodeURIComponent(`Olá, SupportIvy!\n\nEstou entrando em contato sobre: ${mensagemBusca}\n\nPor favor, aguardo retorno.`);
+  
+  window.location.href = `mailto:${destinatario}?subject=${assunto}&body=${corpo}`;
+};
+
+// Navegação interna
+const irPedidos = () => window.location.href = dadosEmpresa.urlPedidos;
+const irTrocas = () => window.location.href = dadosEmpresa.urlTrocas;
+
+// Função para fechar o menu de sugestões ao clicar fora dele
+const fecharAoClicarFora = (e) => {
+  if (!e.target.closest('.search-bar')) {
+    showSuggestions.value = false;
+  }
+};
+
+onMounted(() => window.addEventListener('click', fecharAoClicarFora));
+onUnmounted(() => window.removeEventListener('click', fecharAoClicarFora));
+</script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -90,7 +183,6 @@
   --border: #e5e7eb;
   --text-main: #111827;
   --text-muted: #6b7280;
-  
   min-height: 100vh;
   background-color: var(--bg);
   font-family: 'Inter', sans-serif;
@@ -98,11 +190,7 @@
   padding-bottom: 80px;
 }
 
-.content-wrapper {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.content-wrapper { max-width: 900px; margin: 0 auto; padding: 0 24px; }
 
 /* NAV */
 .top-nav {
@@ -141,7 +229,7 @@
   animation: pulse 2s infinite;
 }
 
-/* HERO */
+/* HERO & SEARCH */
 .hero-section {
   padding: 60px 0;
   text-align: center;
@@ -169,12 +257,6 @@
   align-items: center;
 }
 
-.search-bar svg {
-  position: absolute;
-  left: 20px;
-  color: var(--text-muted);
-}
-
 .search-bar input {
   width: 100%;
   padding: 18px 20px 18px 54px;
@@ -191,7 +273,38 @@
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-/* CARDS GRID */
+.search-bar svg {
+  position: absolute;
+  left: 20px;
+  color: var(--text-muted);
+  z-index: 10;
+}
+
+/* SUGGESTIONS */
+.suggestions-dropdown {
+  position: absolute;
+  top: 105%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  z-index: 100;
+  overflow: hidden;
+  text-align: left;
+}
+
+.suggestion-item {
+  padding: 14px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.suggestion-item:hover { background: #f3f4f6; color: var(--accent); }
+
+/* CARDS */
 .channels-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -275,7 +388,7 @@
   font-size: 15px;
 }
 
-/* ACTIONS LIST */
+/* SELF SERVICE */
 .section-title {
   font-size: 14px;
   font-weight: 600;

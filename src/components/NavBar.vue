@@ -32,11 +32,28 @@
               <input 
                 type="text" 
                 placeholder="Informe seu CEP" 
-                v-model="cep" 
-                @input="buscarCep"
+                v-model="cepFormatted" 
+                @input="onCepInput"
                 maxlength="9"
               >
-              <span v-if="endereco" class="loc-text">{{ endereco }}</span>
+              <span v-if="cepLoading" class="loc-text loading-dots">Buscando...</span>
+              <span v-else-if="endereco" class="loc-text">{{ endereco }}</span>
+              <div v-if="freteInfo" class="frete-popup">
+                <div class="frete-popup-header">
+                  <strong>{{ endereco }}</strong>
+                  <button class="frete-close" @click.stop="fecharFrete">✕</button>
+                </div>
+                <div class="frete-opcoes">
+                  <div class="frete-opcao" v-for="op in freteInfo" :key="op.tipo">
+                    <div class="frete-tipo-nome">{{ op.tipo }}</div>
+                    <div class="frete-prazo">{{ op.prazo }}</div>
+                    <div class="frete-valor" :class="{ gratis: op.gratis }">
+                      {{ op.gratis ? 'Grátis' : 'R$ ' + op.valor }}
+                    </div>
+                  </div>
+                </div>
+                <p class="frete-note">* Valores estimados. Frete exato calculado no checkout.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -136,17 +153,60 @@ const currentMessage = ref(messages[0])
 let msgIdx = 0
 let msgInterval
 
-/* CEP */
-const cep = ref("")
+/* CEP + FRETE */
+const cepFormatted = ref("")
 const endereco = ref("")
-async function buscarCep(){
-  const val = cep.value.replace(/\D/g,"")
-  if(val.length === 8) {
-    try {
-      const res = await fetch(`https://viacep.com.br/ws/${val}/json/`)
-      const data = await res.json()
-      if(!data.erro) endereco.value = `${data.localidade}, ${data.uf}`
-    } catch { endereco.value = "Erro ao buscar" }
+const cepLoading = ref(false)
+const freteInfo = ref(null)
+
+function formatCep(val) {
+  const num = val.replace(/\D/g, "").slice(0, 8)
+  return num.length > 5 ? `${num.slice(0,5)}-${num.slice(5)}` : num
+}
+
+function onCepInput(e) {
+  cepFormatted.value = formatCep(e.target.value)
+  const raw = cepFormatted.value.replace(/\D/g,"")
+  if(raw.length === 8) buscarCep(raw)
+  else { endereco.value = ""; freteInfo.value = null }
+}
+
+function fecharFrete() { freteInfo.value = null }
+
+function calcularFrete(uf) {
+  // Cálculo simulado real por região
+  const regioes = {
+    SP: { pac: { valor: '12,90', prazo: '3-5 dias úteis' }, sedex: { valor: '22,90', prazo: '1-2 dias úteis' } },
+    RJ: { pac: { valor: '14,90', prazo: '3-6 dias úteis' }, sedex: { valor: '25,90', prazo: '1-2 dias úteis' } },
+    MG: { pac: { valor: '10,90', prazo: '2-4 dias úteis' }, sedex: { valor: '18,90', prazo: '1 dia útil' } },
+    RS: { pac: { valor: '16,90', prazo: '5-8 dias úteis' }, sedex: { valor: '28,90', prazo: '2-3 dias úteis' } },
+    SC: { pac: { valor: '15,90', prazo: '4-7 dias úteis' }, sedex: { valor: '26,90', prazo: '1-2 dias úteis' } },
+    PR: { pac: { valor: '14,90', prazo: '3-6 dias úteis' }, sedex: { valor: '24,90', prazo: '1-2 dias úteis' } },
+  }
+  const r = regioes[uf] || { pac: { valor: '19,90', prazo: '6-10 dias úteis' }, sedex: { valor: '34,90', prazo: '2-4 dias úteis' } }
+  return [
+    { tipo: 'PAC', prazo: r.pac.prazo, valor: r.pac.valor, gratis: false },
+    { tipo: 'SEDEX', prazo: r.sedex.prazo, valor: r.sedex.valor, gratis: false },
+    { tipo: 'Frete Grátis', prazo: 'em pedidos acima de R$ 299', valor: '', gratis: true },
+  ]
+}
+
+async function buscarCep(raw) {
+  cepLoading.value = true
+  freteInfo.value = null
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${raw}/json/`)
+    const data = await res.json()
+    if(!data.erro) {
+      endereco.value = `${data.localidade}, ${data.uf}`
+      freteInfo.value = calcularFrete(data.uf)
+    } else {
+      endereco.value = "CEP não encontrado"
+    }
+  } catch {
+    endereco.value = "Erro ao buscar"
+  } finally {
+    cepLoading.value = false
   }
 }
 
@@ -176,7 +236,7 @@ const goLogin = () => {
   const user = JSON.parse(localStorage.getItem("user"))
   router.push(user ? "/perfil" : "/login")
 }
-const goCart = () => router.push("/cart")
+const goCart = () => router.push("/carrinho")
 
 onMounted(() => {
   msgInterval = setInterval(() => {
@@ -243,9 +303,61 @@ onUnmounted(() => clearInterval(msgInterval))
 }
 
 .location-trigger { display: flex; align-items: center; gap: 12px; color: #0a192f; }
-.location-inputs { display: flex; flex-direction: column; }
+.location-inputs { display: flex; flex-direction: column; position: relative; }
 .location-inputs input { border: none; font-size: 13px; width: 120px; outline: none; background: transparent; }
 .loc-text { font-size: 10px; color: #888; text-transform: uppercase; }
+.loc-text.loading-dots { color: #d4af37; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.4 } }
+
+/* FRETE POPUP */
+.frete-popup {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: -30px;
+  background: white;
+  border: 1px solid #e8e5e0;
+  border-radius: 8px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+  width: 300px;
+  z-index: 200;
+  overflow: hidden;
+}
+.frete-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #0a192f;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+}
+.frete-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  line-height: 1;
+}
+.frete-close:hover { color: white; }
+.frete-opcoes { padding: 8px 0; }
+.frete-opcao {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 12px;
+}
+.frete-opcao:last-child { border-bottom: none; }
+.frete-tipo-nome { font-weight: 600; color: #0a192f; }
+.frete-prazo { color: #888; font-size: 11px; }
+.frete-valor { font-weight: 600; color: #0a192f; white-space: nowrap; }
+.frete-valor.gratis { color: #16a34a; }
+.frete-note { font-size: 10px; color: #bbb; padding: 8px 16px 12px; border-top: 1px solid #f5f5f5; }
 
 .brand-logo { text-decoration: none; text-align: center; }
 .brand-logo h1 {
