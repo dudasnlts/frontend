@@ -279,116 +279,149 @@ const fecharModal = () => { produtoSelecionado.value = null; document.body.style
 const handleAddToCart = (p) => {
   addToCart(p)
   fecharModal()
-  router.push('/carrinho')
+router.push('/carrinho')
 }
 </script>
 
 <style scoped>
 .home {
   font-family: 'DM Sans', sans-serif;
-  color: #111;
+  background: #ffffff;
+  color: #111827;
   overflow-x: hidden;
-  background: #fff;
-  padding-top: 0;
 }
 
 /* ───────────────── HERO ───────────────── */
+
 .hero {
-  padding: 20px 20px 0;
-  position: relative;
-  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  background: #fff;
 }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1fr 1.7fr 1fr;
-  gap: 18px;
-  height: calc(100vh - 110px);
-  min-height: 720px;
-  align-items: center;
+  grid-template-columns: 1fr 1.45fr 1fr;
+
+  gap: 0;
+
+  width: 100%;
+  height: calc(100vh - 90px);
+  min-height: 760px;
 }
 
 .hero-item {
   position: relative;
   overflow: hidden;
-  border-radius: 28px;
+  height: 100%;
 }
 
 .hero-item img {
   width: 100%;
   height: 100%;
+
   object-fit: cover;
+  display: block;
+
   transition: transform .8s ease;
 }
 
 .hero-item:hover img {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
+
+/* laterais */
 
 .hero-item.side {
-  height: 78%;
+  z-index: 1;
 }
 
+/* imagem principal */
+
 .hero-item.center {
-  height: 100%;
-  transform: translateY(-18px);
+  z-index: 3;
+
+  transform: scale(1.03);
+
+  border-radius: 0 0 30px 30px;
+
   box-shadow:
-    0 25px 80px rgba(0,0,0,.18),
-    0 10px 30px rgba(0,0,0,.10);
-  z-index: 2;
+    0 20px 60px rgba(0,0,0,.12),
+    0 8px 20px rgba(0,0,0,.06);
 }
+
+/* overlay */
 
 .overlay {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(0,0,0,.05) 0%,
-      rgba(0,0,0,.18) 45%,
-      rgba(4,12,25,.78) 100%
-    );
+
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 60px;
+
+  padding: 70px;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,.72),
+      rgba(0,0,0,.18),
+      rgba(0,0,0,.03)
+    );
 }
 
 .content {
-  color: white;
+  max-width: 620px;
   text-align: center;
-  max-width: 560px;
+  color: white;
 }
 
 .tag {
   display: inline-flex;
-  padding: 8px 18px;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 18px;
+
   border-radius: 999px;
+
   background: rgba(255,255,255,.12);
+
+  border: 1px solid rgba(255,255,255,.18);
+
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,.14);
 
   font-size: 10px;
+  font-weight: 600;
   letter-spacing: 3px;
   text-transform: uppercase;
-  margin-bottom: 20px;
+
+  margin-bottom: 24px;
 }
 
 .content h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 72px;
-  font-weight: 500;
-  line-height: .95;
-  margin: 0 0 20px;
+  font-size: 82px;
   font-style: italic;
+  font-weight: 500;
+
+  line-height: .92;
+
+  margin-bottom: 22px;
 }
 
 .content p {
-  font-size: 15px;
-  opacity: .82;
-  line-height: 1.7;
-  margin-bottom: 32px;
+  font-size: 16px;
+  line-height: 1.8;
+
+  opacity: .88;
+
+  margin-bottom: 36px;
 }
+
+/* botões hero */
 
 .hero-btns {
   display: flex;
@@ -398,98 +431,93 @@ const handleAddToCart = (p) => {
 }
 
 .btn-hero {
-  height: 52px;
-  padding: 0 28px;
+  height: 56px;
+  padding: 0 34px;
+
   border-radius: 14px;
+
+  background: white;
+  color: #081120;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: white;
-  color: #07111f;
-
   text-decoration: none;
+
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1.8px;
+  letter-spacing: 1.7px;
   text-transform: uppercase;
 
   transition: .3s ease;
 }
 
 .btn-hero:hover {
-  transform: translateY(-3px);
   background: #d4af37;
   color: white;
+
+  transform: translateY(-3px);
 }
 
 .btn-hero.ghost {
   background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.28);
-  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,.18);
+
   color: white;
+
+  backdrop-filter: blur(10px);
 }
 
 .btn-hero.ghost:hover {
   background: white;
-  color: #0a192f;
+  color: #081120;
 }
 
-/* ───────────────── BENEFITS ───────────────── */
+/* ───────────────── BENEFÍCIOS ───────────────── */
+
 .benefits-section {
-  position: relative;
-  margin-top: 70px;
-  overflow: hidden;
-}
-
-.benefits-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  filter: blur(3px) brightness(.28);
-  transform: scale(1.08);
-}
-
-.benefits-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(7,17,31,.92),
-      rgba(12,28,52,.88)
-    );
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #efefef;
+  background: white;
 }
 
 .benefits {
-  position: relative;
-  z-index: 2;
+  max-width: 1400px;
+  margin: auto;
 
   display: grid;
   grid-template-columns: repeat(5,1fr);
 
-  padding: 28px 40px;
+  padding: 28px 24px;
 }
 
 .benefit {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
 
-  padding: 18px 22px;
+  gap: 14px;
+
+  padding: 12px 18px;
+
   position: relative;
 }
 
 .benefit::after {
   content: "";
+
   position: absolute;
   right: 0;
-  top: 20%;
+  top: 50%;
+
+  transform: translateY(-50%);
+
   width: 1px;
-  height: 60%;
-  background: rgba(255,255,255,.08);
+  height: 38px;
+
+  background: #ececec;
 }
 
 .benefit:last-child::after {
@@ -497,12 +525,12 @@ const handleAddToCart = (p) => {
 }
 
 .benefit-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
+  width: 48px;
+  height: 48px;
 
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(212,175,55,.28);
+  border-radius: 50%;
+
+  background: #f8f8f8;
 
   display: flex;
   align-items: center;
@@ -512,58 +540,69 @@ const handleAddToCart = (p) => {
 }
 
 .benefit svg {
-  width: 22px;
-  height: 22px;
-  color: #d4af37;
+  width: 21px;
+  height: 21px;
+  color: #0f172a;
 }
 
 .b-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .b-sub {
   font-size: 11px;
-  color: rgba(255,255,255,.48);
+  color: #8b8b8b;
+
   margin-top: 4px;
 }
 
-/* ───────────────── PRODUCTS ───────────────── */
+/* ───────────────── SEÇÕES ───────────────── */
+
 .products {
   padding: 110px 6%;
 }
 
 .products.alt-bg {
-  background: linear-gradient(to bottom,#faf9f7,#fff);
+  background: linear-gradient(to bottom,#fafafa,#fff);
 }
 
 .section-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 70px;
 }
 
 .section-tag {
-  font-size: 10px;
+  display: block;
+
+  margin-bottom: 18px;
+
+  color: #b48a2f;
+
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 4px;
   text-transform: uppercase;
-  color: #d4af37;
-  display: block;
-  margin-bottom: 14px;
 }
 
 .section-header h2 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 54px;
-  font-weight: 500;
-  color: #0a192f;
-  margin-bottom: 14px;
+  font-family: 'Playfair Display', serif;
+  font-size: 68px;
+  font-style: italic;
+  font-weight: 600;
+
+  color: #081120;
+
+  margin-bottom: 16px;
 }
 
 .section-header p {
   font-size: 15px;
-  color: #7f7f7f;
+  color: #7c7c7c;
 }
+
+/* ───────────────── GRID ───────────────── */
 
 .grid {
   display: grid;
@@ -574,110 +613,99 @@ const handleAddToCart = (p) => {
   grid-template-columns: repeat(3,1fr);
 }
 
-/* ───────────────── CARDS MELHORADOS ───────────────── */
-.card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 28px;
+/* ───────────────── CARDS ───────────────── */
 
-  background: #fff;
-  border: 1px solid #ececec;
+.card {
+  background: white;
+
+  border-radius: 30px;
+  overflow: hidden;
+
+  border: 1px solid #ededed;
 
   transition:
-    transform .4s ease,
-    box-shadow .4s ease,
-    border-color .4s ease;
+    transform .35s ease,
+    box-shadow .35s ease,
+    border-color .35s ease;
 }
 
 .card:hover {
   transform: translateY(-10px);
-  border-color: rgba(212,175,55,.3);
+
+  border-color: rgba(212,175,55,.28);
 
   box-shadow:
-    0 20px 60px rgba(10,25,47,.10),
-    0 10px 24px rgba(10,25,47,.06);
+    0 30px 70px rgba(0,0,0,.08),
+    0 10px 30px rgba(0,0,0,.04);
 }
 
 .card-img {
   position: relative;
   overflow: hidden;
-  background: #f5f3f0;
-}
 
-.card-img::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      180deg,
-      transparent 40%,
-      rgba(0,0,0,.12) 100%
-    );
-  pointer-events: none;
+  background: #f5f5f5;
 }
 
 .card-img img {
   width: 100%;
-  aspect-ratio: 3/4;
+  height: 430px;
+
   object-fit: cover;
   display: block;
 
-  transition: transform .7s cubic-bezier(.22,1,.36,1);
+  transition: transform .8s ease;
 }
 
 .card:hover .card-img img {
   transform: scale(1.08);
 }
 
-.card-actions {
+.card-img::after {
+  content: "";
+
   position: absolute;
   inset: 0;
 
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-
-  padding-bottom: 24px;
-
-  opacity: 0;
-  transition: .35s ease;
-
   background:
     linear-gradient(
-      180deg,
-      transparent 20%,
-      rgba(7,17,31,.55) 100%
+      to top,
+      rgba(0,0,0,.22),
+      transparent 45%
     );
+
+  pointer-events: none;
 }
 
-.card:hover .card-actions {
-  opacity: 1;
-}
+/* badges */
 
-.card-btn-view {
-  height: 46px;
-  padding: 0 26px;
+.badge {
+  position: absolute;
+  top: 18px;
+  left: 18px;
 
-  border: none;
-  border-radius: 14px;
+  padding: 8px 14px;
 
-  background: white;
-  color: #07111f;
+  border-radius: 999px;
 
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 1.6px;
   text-transform: uppercase;
 
-  cursor: pointer;
-  transition: .25s ease;
+  z-index: 3;
 }
 
-.card-btn-view:hover {
-  background: #d4af37;
+.badge.novo {
+  background: #081120;
   color: white;
 }
+
+.badge.hot {
+  background: #d4af37;
+  color: #081120;
+}
+
+/* favoritar */
 
 .card-btn-wish {
   position: absolute;
@@ -690,8 +718,7 @@ const handleAddToCart = (p) => {
   border-radius: 50%;
   border: none;
 
-  background: rgba(255,255,255,.9);
-  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,.94);
 
   display: flex;
   align-items: center;
@@ -699,15 +726,9 @@ const handleAddToCart = (p) => {
 
   cursor: pointer;
 
-  opacity: 0;
-  transform: translateY(-6px);
+  z-index: 4;
 
   transition: .3s ease;
-}
-
-.card:hover .card-btn-wish {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .card-btn-wish:hover {
@@ -715,78 +736,113 @@ const handleAddToCart = (p) => {
 }
 
 .card-btn-wish svg {
-  color: #0a192f;
-  transition: .2s;
+  color: #081120;
 }
 
-.card-btn-wish:hover svg {
-  color: white;
-}
+/* ações */
 
-.badge {
+.card-actions {
   position: absolute;
-  top: 18px;
-  left: 18px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
 
-  padding: 7px 12px;
-  border-radius: 999px;
+  display: flex;
+  gap: 12px;
 
-  font-size: 9px;
+  opacity: 0;
+  transform: translateY(14px);
+
+  transition: .35s ease;
+}
+
+.card:hover .card-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-btn-view,
+.card-btn-cart {
+  flex: 1;
+
+  height: 48px;
+
+  border: none;
+  border-radius: 14px;
+
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1.6px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
 
-  backdrop-filter: blur(10px);
+  cursor: pointer;
+
+  transition: .3s ease;
 }
 
-.badge.novo {
-  background: rgba(10,25,47,.82);
+.card-btn-view {
+  background: rgba(255,255,255,.96);
+  color: #081120;
+}
+
+.card-btn-view:hover {
+  background: white;
+}
+
+.card-btn-cart {
+  background: #081120;
   color: white;
 }
 
-.badge.hot {
-  background: rgba(255,255,255,.9);
-  color: #0a192f;
+.card-btn-cart:hover {
+  background: #d4af37;
+  color: #081120;
 }
 
+/* info */
+
 .card-info {
-  padding: 24px;
+  padding: 28px;
 }
 
 .card-category {
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #d4af37;
-  margin-bottom: 10px;
+
+  color: #b48a2f;
+
+  margin-bottom: 12px;
 }
 
 .card-info h3 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 30px;
+  font-size: 36px;
   font-weight: 500;
-  line-height: 1.05;
 
-  color: #0a192f;
-  margin-bottom: 16px;
+  color: #081120;
+
+  margin-bottom: 18px;
 }
 
 .card-price-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  justify-content: space-between;
+
+  margin-bottom: 16px;
 }
 
 .price {
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 700;
-  color: #0a192f;
+
+  color: #081120;
 }
 
 .installment {
   font-size: 11px;
-  color: #8d8d8d;
+  color: #8a8a8a;
 }
 
 .card-pix {
@@ -794,7 +850,8 @@ const handleAddToCart = (p) => {
   align-items: center;
   gap: 8px;
 
-  padding: 8px 12px;
+  padding: 9px 14px;
+
   border-radius: 999px;
 
   background: #f7f7f7;
@@ -806,19 +863,23 @@ const handleAddToCart = (p) => {
 .pix-dot {
   width: 7px;
   height: 7px;
+
   border-radius: 50%;
+
   background: #32bcad;
 }
 
 /* ───────────────── BANNERS ───────────────── */
+
 .editorial-banner,
 .highlight-banner {
+  position: relative;
   overflow: hidden;
 }
 
 .editorial-banner {
-  position: relative;
-  min-height: 620px;
+  min-height: 640px;
+
   display: flex;
   align-items: center;
 }
@@ -827,8 +888,10 @@ const handleAddToCart = (p) => {
 .highlight-bg {
   position: absolute;
   inset: 0;
+
   background-size: cover;
   background-position: center;
+
   transition: transform .8s ease;
 }
 
@@ -840,11 +903,12 @@ const handleAddToCart = (p) => {
 .editorial-dark-overlay {
   position: absolute;
   inset: 0;
+
   background:
     linear-gradient(
       90deg,
-      rgba(5,15,28,.94) 28%,
-      rgba(5,15,28,.25) 100%
+      rgba(0,0,0,.78),
+      rgba(0,0,0,.14)
     );
 }
 
@@ -853,52 +917,68 @@ const handleAddToCart = (p) => {
   z-index: 2;
 
   width: 100%;
-  max-width: 1250px;
+  max-width: 1300px;
+
   margin: auto;
   padding: 90px 6%;
 }
 
 .editorial-text {
-  max-width: 520px;
+  max-width: 560px;
   color: white;
+}
+
+.editorial-tag {
+  display: inline-block;
+
+  margin-bottom: 18px;
+
+  color: #d4af37;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
 }
 
 .editorial-text h2 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 68px;
-  line-height: .95;
+  font-size: 72px;
   font-style: italic;
   font-weight: 500;
-  margin-bottom: 20px;
+
+  line-height: .94;
+
+  margin-bottom: 24px;
 }
 
 .editorial-text p {
   font-size: 15px;
   line-height: 1.8;
-  color: rgba(255,255,255,.62);
+
+  color: rgba(255,255,255,.76);
+
   margin-bottom: 36px;
 }
 
 .btn-editorial {
+  height: 56px;
+  padding: 0 32px;
+
+  border-radius: 14px;
+
+  background: white;
+  color: #081120;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  height: 52px;
-  padding: 0 28px;
-
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.18);
-
-  background: rgba(255,255,255,.06);
-  backdrop-filter: blur(10px);
-
-  color: white;
   text-decoration: none;
 
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1.8px;
+  letter-spacing: 1.6px;
   text-transform: uppercase;
 
   transition: .3s ease;
@@ -906,12 +986,13 @@ const handleAddToCart = (p) => {
 
 .btn-editorial:hover {
   background: #d4af37;
-  border-color: #d4af37;
+  color: white;
 }
 
+/* ───────────────── HIGHLIGHT ───────────────── */
+
 .highlight-banner {
-  position: relative;
-  height: 420px;
+  height: 440px;
 
   display: flex;
   align-items: center;
@@ -921,42 +1002,42 @@ const handleAddToCart = (p) => {
 .highlight-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10,25,47,.60);
+
+  background: rgba(0,0,0,.46);
 }
 
 .highlight-content {
   position: relative;
   z-index: 2;
+
   text-align: center;
   color: white;
 }
 
 .highlight-content h2 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 64px;
-  line-height: .95;
+  font-size: 70px;
   font-style: italic;
   font-weight: 500;
-  margin-bottom: 14px;
+
+  line-height: .94;
+
+  margin-bottom: 16px;
 }
 
 .highlight-content p {
   font-size: 15px;
-  opacity: .72;
+  opacity: .82;
 }
 
 /* ───────────────── PIX ───────────────── */
+
 .pix-banner {
-  background:
-    linear-gradient(
-      135deg,
-      #d4af37,
-      #e6c65a
-    );
+  background: linear-gradient(135deg,#d4af37,#e8c55d);
 }
 
 .pix-inner {
-  max-width: 1150px;
+  max-width: 1200px;
   margin: auto;
 
   padding: 50px 30px;
@@ -964,94 +1045,96 @@ const handleAddToCart = (p) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 30px;
   flex-wrap: wrap;
 }
 
 .pix-icon {
-  width: 70px;
-  height: 70px;
+  width: 72px;
+  height: 72px;
 
   border-radius: 20px;
 
-  background: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.2);
 
   display: flex;
   align-items: center;
   justify-content: center;
-
-  color: #0a192f;
 }
 
 .pix-text h3 {
-  font-size: 28px;
-  color: #0a192f;
+  font-size: 30px;
+  color: #081120;
+
   margin-bottom: 6px;
 }
 
 .pix-text p {
-  font-size: 14px;
-  color: rgba(10,25,47,.72);
+  color: rgba(8,17,32,.72);
 }
 
 .btn-pix {
-  height: 54px;
-  padding: 0 28px;
+  height: 56px;
+  padding: 0 32px;
 
   border-radius: 14px;
 
-  background: #0a192f;
+  background: #081120;
   color: white;
-
-  text-decoration: none;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  text-decoration: none;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
 
   transition: .3s ease;
 }
 
 .btn-pix:hover {
   transform: translateY(-3px);
-  background: #132845;
 }
 
 /* ───────────────── MODAL ───────────────── */
+
 .modal {
   position: fixed;
   inset: 0;
 
-  background: rgba(4,12,25,.72);
+  background: rgba(0,0,0,.65);
   backdrop-filter: blur(8px);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  z-index: 99999;
+  z-index: 9999;
+
   padding: 20px;
 }
 
 .modal-box {
   width: 100%;
-  max-width: 920px;
+  max-width: 980px;
 
   background: white;
-  border-radius: 30px;
 
+  border-radius: 32px;
   overflow: hidden;
+
   position: relative;
 }
 
 .modal-close-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 18px;
+  right: 18px;
 
   width: 42px;
   height: 42px;
@@ -1059,14 +1142,14 @@ const handleAddToCart = (p) => {
   border-radius: 50%;
   border: none;
 
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,.94);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   cursor: pointer;
+
   z-index: 10;
 }
 
@@ -1082,40 +1165,45 @@ const handleAddToCart = (p) => {
 .modal-img-wrap img {
   width: 100%;
   height: 100%;
-  min-height: 580px;
+  min-height: 620px;
+
   object-fit: cover;
 }
 
 .modal-details {
-  padding: 50px;
+  padding: 54px;
+
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .modal-tag {
   font-size: 10px;
   letter-spacing: 4px;
   text-transform: uppercase;
+
   color: #d4af37;
 }
 
 .modal-details h2 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 46px;
-  line-height: .95;
-  color: #0a192f;
+  font-size: 52px;
+  line-height: .94;
+
+  color: #081120;
 }
 
 .modal-price {
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 700;
-  color: #0a192f;
+
+  color: #081120;
 }
 
 .modal-installment {
   font-size: 13px;
-  color: #999;
+  color: #8a8a8a;
 }
 
 .modal-pix {
@@ -1125,9 +1213,10 @@ const handleAddToCart = (p) => {
 
 .discount-badge {
   background: #d4af37;
-  color: #0a192f;
+  color: #081120;
 
   padding: 4px 10px;
+
   border-radius: 999px;
 
   font-size: 10px;
@@ -1137,7 +1226,7 @@ const handleAddToCart = (p) => {
 .modal-info {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .info-row {
@@ -1156,11 +1245,12 @@ const handleAddToCart = (p) => {
 .btn-add {
   margin-top: auto;
 
-  height: 56px;
-  border-radius: 16px;
-  border: none;
+  height: 58px;
 
-  background: #0a192f;
+  border: none;
+  border-radius: 16px;
+
+  background: #081120;
   color: white;
 
   display: flex;
@@ -1170,18 +1260,21 @@ const handleAddToCart = (p) => {
 
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 1.6px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 
   cursor: pointer;
+
   transition: .3s ease;
 }
 
 .btn-add:hover {
-  background: #132845;
+  background: #d4af37;
+  color: #081120;
 }
 
 /* ───────────────── TRANSITIONS ───────────────── */
+
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity .3s ease;
@@ -1192,8 +1285,25 @@ const handleAddToCart = (p) => {
   opacity: 0;
 }
 
-/* ───────────────── RESPONSIVE ───────────────── */
+/* ───────────────── RESPONSIVO ───────────────── */
+
 @media (max-width: 1100px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    height: auto;
+  }
+
+  .hero-item.side {
+    display: none;
+  }
+
+  .hero-item.center {
+    transform: none;
+    border-radius: 0;
+    height: 84vh;
+  }
+
   .benefits {
     grid-template-columns: repeat(2,1fr);
   }
@@ -1206,19 +1316,8 @@ const handleAddToCart = (p) => {
     grid-template-columns: repeat(2,1fr);
   }
 
-  .hero-grid {
+  .modal-grid {
     grid-template-columns: 1fr;
-    height: auto;
-    min-height: auto;
-  }
-
-  .hero-item.side {
-    display: none;
-  }
-
-  .hero-item.center {
-    height: 82vh;
-    transform: none;
   }
 }
 
@@ -1233,43 +1332,44 @@ const handleAddToCart = (p) => {
 
   .benefits {
     grid-template-columns: 1fr;
-    padding: 20px;
+    gap: 10px;
+  }
+
+  .hero-item.center {
+    height: 74vh;
+  }
+
+  .overlay {
+    padding: 30px 22px;
   }
 
   .content h1,
+  .section-header h2,
   .editorial-text h2,
   .highlight-content h2 {
-    font-size: 46px;
+    font-size: 48px;
   }
 
-  .section-header h2 {
-    font-size: 42px;
+  .card-img img {
+    height: 380px;
   }
 
-  .modal-grid {
-    grid-template-columns: 1fr;
+  .card-actions {
+    opacity: 1;
+    transform: none;
   }
 
   .modal-details {
-    padding: 30px;
+    padding: 34px 26px;
+  }
+
+  .modal-img-wrap img {
+    min-height: 420px;
   }
 
   .pix-inner {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .hero {
-    padding: 12px 12px 0;
-  }
-
-  .hero-item.center {
-    border-radius: 22px;
-    height: 75vh;
-  }
-
-  .overlay {
-    padding: 30px 20px;
   }
 }
 </style>

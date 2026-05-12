@@ -17,7 +17,7 @@ import Acessorios from "@/views/Acessorios.vue"
 import Atendimento from "@/views/Atendimento.vue"
 import Acessibilidade from "@/views/Acessibilidade.vue"
 import Carrinho from "@/views/Carrinho.vue"
-import Duvidas from "@/views/Duvidas.vue"
+import Duvidas from "@/views/duvidas.vue"
 
 
 

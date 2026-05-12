@@ -1,250 +1,484 @@
 <template>
-  <div class="cart-page">
+  <main class="cart-page">
     <div class="container">
-      
-      <!-- 1. ESTADO VAZIO (LUXO) -->
-      <div v-if="cart.items.length === 0" class="empty-state-luxury">
-        <div class="empty-content">
-          <div class="icon-wrapper">
-            <ShoppingBag :size="45" stroke-width="1" />
-            <div class="dot-decoration"></div>
-          </div>
-          
-          <h2 class="empty-title">Sua sacola está vazia</h2>
-          <p class="empty-subtitle">
-            Curadoria exclusiva de peças que contam histórias. <br>
-            Encontre sua próxima joia ou um presente inesquecível.
-          </p>
 
-          <div class="first-purchase-banner">
-            <div class="banner-inner">
-              <span class="tag">Presente de Boas-Vindas</span>
-              <h3>15% OFF na sua primeira joia</h3>
-              <p>Use o código: <strong class="promo-code">WELCOME15</strong></p>
-            </div>
-          </div>
-
-          <router-link to="/" class="btn-luxury">Explorar Coleções</router-link>
-
-          <div class="quick-links">
-            <span>Sugestões:</span>
-            <router-link to="/aneis">Anéis</router-link>
-            <router-link to="/colares">Colares</router-link>
-            <router-link to="/brincos">Brincos</router-link>
-          </div>
+      <!-- CARRINHO VAZIO -->
+      <section v-if="cart.items.length === 0" class="empty-cart">
+        <div class="empty-icon">
+          <ShoppingBag :size="42" stroke-width="1.5" />
         </div>
-      </div>
 
-      <!-- 2. CARRINHO ATIVO -->
-      <div v-else>
-        <!-- Barra de Progresso de Frete -->
-        <div class="benefit-bar">
-          <div class="bar-text">
-            <Truck :size="16" />
-            <span v-if="amountToFreeShipping > 0">
-              Adicione <strong>R$ {{ amountToFreeShipping.toFixed(2) }}</strong> para garantir <strong>Frete Cortesia</strong>
+        <h1>Sua sacola está vazia</h1>
+
+        <p>
+          Descubra peças exclusivas e eternize momentos especiais
+          com a coleção IVY.
+        </p>
+
+        <router-link to="/" class="shop-btn">
+          Explorar Coleções
+        </router-link>
+
+        <div class="empty-links">
+          <router-link to="/aneis">Anéis</router-link>
+          <router-link to="/colares">Colares</router-link>
+          <router-link to="/brincos">Brincos</router-link>
+        </div>
+      </section>
+
+      <!-- CARRINHO -->
+      <section v-else>
+
+        <!-- TOPO -->
+        <div class="cart-top">
+          <div>
+            <h1 class="title">
+              Minha Sacola
+            </h1>
+
+            <span class="items-count">
+              {{ cart.items.length }}
+              {{ cart.items.length > 1 ? 'itens' : 'item' }}
             </span>
-            <span v-else class="success-text">Você desbloqueou o <strong>Frete Cortesia Ivy</strong></span>
           </div>
-          <div class="bar-bg">
-            <div class="bar-fill" :style="{ width: Math.min((getTotal() / 1500) * 100, 100) + '%' }"></div>
+
+          <div class="shipping-banner">
+            <Truck :size="17" />
+
+            <span v-if="amountToFreeShipping > 0">
+              Faltam
+              <strong>
+                R$ {{ amountToFreeShipping.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+              </strong>
+              para frete grátis
+            </span>
+
+            <span v-else class="free-text">
+              Você desbloqueou frete grátis ✨
+            </span>
           </div>
         </div>
 
+        <!-- GRID -->
         <div class="cart-grid">
-          <!-- SEÇÃO DA SACOLA -->
-          <section class="bag-items">
-            <h1 class="section-title">Minha Sacola <span class="count">({{ cart.items.length }})</span></h1>
-            
-            <TransitionGroup name="fade-list">
-              <div class="product-card" v-for="item in cart.items" :key="item.id || item._id">
-                <div class="product-img">
-                  <img :src="item.image || 'https://via.placeholder.com/200x250'" :alt="item.name">
+
+          <!-- PRODUTOS -->
+          <section class="products">
+
+            <TransitionGroup name="cart-animation">
+
+              <article
+                class="product-card"
+                v-for="item in cart.items"
+                :key="item._id || item.id"
+              >
+
+                <!-- FOTO -->
+                <div class="image-wrapper">
+                  <img
+                    :src="item.image || fallbackImage"
+                    :alt="item.name"
+                  />
                 </div>
-                
+
+                <!-- INFO -->
                 <div class="product-info">
-                  <div class="info-top">
+
+                  <div class="top-info">
                     <div>
-                      <h3>{{ item.name }}</h3>
-                      <p class="sku">Ref: {{ (item.id || item._id).substring(0, 6).toUpperCase() }}</p>
+                      <h2>{{ item.name }}</h2>
+
+                      <span class="reference">
+                        REF:
+                        {{
+                          String(item._id || item.id || '000000')
+                            .substring(0, 6)
+                            .toUpperCase()
+                        }}
+                      </span>
                     </div>
-                    <button class="remove-btn" @click="removeFromCart(item.id || item._id)">
-                      <X :size="20" />
+
+                    <button
+                      class="remove-btn"
+                      @click="removeFromCart(item._id || item.id)"
+                    >
+                      <X :size="18" />
                     </button>
                   </div>
 
-                  <div class="info-bottom">
-                    <div class="qty-control">
-                      <button @click="updateQuantity(item.id || item._id, -1)" :disabled="item.quantity <= 1">−</button>
-                      <span>{{ item.quantity }}</span>
-                      <button @click="updateQuantity(item.id || item._id, 1)">+</button>
+                  <div class="bottom-info">
+
+                    <!-- QUANTIDADE -->
+                    <div class="quantity-box">
+
+                      <button
+                        @click="updateQuantity(item._id || item.id, -1)"
+                        :disabled="item.quantity <= 1"
+                      >
+                        -
+                      </button>
+
+                      <span>
+                        {{ item.quantity }}
+                      </span>
+
+                      <button
+                        @click="updateQuantity(item._id || item.id, 1)"
+                      >
+                        +
+                      </button>
+
                     </div>
-                    <span class="total-item-price">
-                      R$ {{ (item.price * item.quantity).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
-                    </span>
+
+                    <!-- PREÇO -->
+                    <strong class="price">
+                      R$
+                      {{
+                        (item.price * item.quantity).toLocaleString(
+                          'pt-BR',
+                          { minimumFractionDigits: 2 }
+                        )
+                      }}
+                    </strong>
+
                   </div>
                 </div>
-              </div>
+
+              </article>
+
             </TransitionGroup>
+
           </section>
 
-          <!-- RESUMO DO PEDIDO -->
-          <aside class="order-summary">
-            <div class="summary-box">
-              <h2 class="summary-title">Resumo</h2>
+          <!-- RESUMO -->
+          <aside class="summary">
 
-              <!-- CEP FUNCIONAL -->
-              <div class="summary-field">
+            <div class="summary-card">
+
+              <h2>Resumo do Pedido</h2>
+
+              <!-- CEP -->
+              <div class="field">
+
                 <label>Calcular Frete</label>
-                <div class="input-inline">
-                  <input type="text" v-model="zipCode" placeholder="00000-000" maxlength="9">
-                  <button @click="handleShipping" :disabled="shippingLoading">
-                    <Loader2 v-if="shippingLoading" class="spinner" :size="16" />
-                    <span v-else>Ok</span>
+
+                <div class="input-group">
+
+                  <input
+                    v-model="zipCode"
+                    type="text"
+                    placeholder="00000-000"
+                    maxlength="9"
+                  />
+
+                  <button
+                    @click="handleShipping"
+                    :disabled="shippingLoading"
+                  >
+                    <Loader2
+                      v-if="shippingLoading"
+                      class="spin"
+                      :size="16"
+                    />
+
+                    <span v-else>
+                      OK
+                    </span>
                   </button>
+
                 </div>
-                <p v-if="addressResult" class="address-detail">
-                  <MapPin :size="12" /> {{ addressResult.localidade }}, {{ addressResult.uf }}
-                </p>
+
+                <small
+                  v-if="addressResult"
+                  class="success-msg"
+                >
+                  <MapPin :size="12" />
+                  {{ addressResult.localidade }},
+                  {{ addressResult.uf }}
+                </small>
+
               </div>
 
-              <!-- CUPOM FUNCIONAL -->
-              <div class="summary-field">
-                <label>Cupom de Desconto</label>
-                <div class="input-inline">
-                  <input type="text" v-model="couponInput" placeholder="Código" :disabled="discount > 0">
-                  <button @click="applyCoupon" :class="{'applied': discount > 0}">
-                    {{ discount > 0 ? 'Aplicado' : 'Aplicar' }}
+              <!-- CUPOM -->
+              <div class="field">
+
+                <label>Cupom</label>
+
+                <div class="input-group">
+
+                  <input
+                    v-model="couponInput"
+                    type="text"
+                    placeholder="Digite seu cupom"
+                  />
+
+                  <button @click="applyCoupon">
+                    Aplicar
                   </button>
+
                 </div>
-                <p v-if="discount > 0" class="discount-msg">Desconto de 15% aplicado!</p>
+
+                <small
+                  v-if="discount > 0"
+                  class="success-msg"
+                >
+                  Cupom aplicado com sucesso
+                </small>
+
               </div>
 
-              <div class="bill-details">
-                <div class="bill-row">
+              <!-- VALORES -->
+              <div class="values">
+
+                <div class="value-row">
                   <span>Subtotal</span>
-                  <span>R$ {{ getTotal().toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span>
+
+                  <strong>
+                    R$
+                    {{
+                      subtotal.toLocaleString(
+                        'pt-BR',
+                        { minimumFractionDigits: 2 }
+                      )
+                    }}
+                  </strong>
                 </div>
-                <div class="bill-row">
+
+                <div class="value-row">
                   <span>Frete</span>
-                  <span :class="{'free': shippingValue === 0}">
-                    {{ shippingValue === 0 ? 'Grátis' : `R$ ${shippingValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }}
-                  </span>
+
+                  <strong>
+                    {{
+                      shippingValue === 0
+                        ? 'Grátis'
+                        : `R$ ${shippingValue.toLocaleString('pt-BR', {
+                            minimumFractionDigits: 2
+                          })}`
+                    }}
+                  </strong>
                 </div>
-                <div class="bill-row" v-if="discount > 0">
+
+                <div
+                  v-if="discount > 0"
+                  class="value-row discount"
+                >
                   <span>Desconto</span>
-                  <span class="discount-val">- R$ {{ discount.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</span>
+
+                  <strong>
+                    - R$
+                    {{
+                      discount.toLocaleString(
+                        'pt-BR',
+                        { minimumFractionDigits: 2 }
+                      )
+                    }}
+                  </strong>
                 </div>
-                
-                <div class="bill-total">
-                  <span>Total</span>
-                  <div class="total-group">
-                    <strong>R$ {{ finalTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</strong>
-                    <small>ou 10x de R$ {{ (finalTotal / 10).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}</small>
-                  </div>
-                </div>
+
               </div>
 
-              <button class="checkout-btn" @click="handleFinalize" :disabled="checkoutLoading">
-                <span v-if="!checkoutLoading">Finalizar Compra</span>
-                <Loader2 v-else class="spinner" :size="20" />
+              <!-- TOTAL -->
+              <div class="total-box">
+
+                <span>Total</span>
+
+                <div class="total-values">
+
+                  <strong>
+                    R$
+                    {{
+                      finalTotal.toLocaleString(
+                        'pt-BR',
+                        { minimumFractionDigits: 2 }
+                      )
+                    }}
+                  </strong>
+
+                  <small>
+                    ou 10x de
+                    R$
+                    {{
+                      (finalTotal / 10).toLocaleString(
+                        'pt-BR',
+                        { minimumFractionDigits: 2 }
+                      )
+                    }}
+                  </small>
+
+                </div>
+
+              </div>
+
+              <!-- BOTÃO -->
+              <button
+                class="checkout-btn"
+                @click="handleFinalize"
+                :disabled="checkoutLoading"
+              >
+
+                <Loader2
+                  v-if="checkoutLoading"
+                  class="spin"
+                  :size="20"
+                />
+
+                <span v-else>
+                  Finalizar Compra
+                </span>
+
               </button>
 
-              <div class="security-tag">
-                <Lock :size="12" /> Pagamento 100% Seguro
+              <div class="secure">
+                <Lock :size="13" />
+                Ambiente 100% seguro
               </div>
+
             </div>
+
           </aside>
+
         </div>
-      </div>
+      </section>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
 import { ref, computed } from "vue"
 import { useRouter } from "vue-router"
 import axios from "axios"
-import { X, ShoppingBag, Truck, Loader2, MapPin, Lock } from "lucide-vue-next"
-import { cart, removeFromCart, getTotal, updateQuantity } from "@/stores/cart"
+
+import {
+  ShoppingBag,
+  Truck,
+  X,
+  Loader2,
+  MapPin,
+  Lock
+} from "lucide-vue-next"
+
+import {
+  cart,
+  removeFromCart,
+  updateQuantity,
+  getTotal
+} from "@/stores/cart"
 
 const router = useRouter()
 
-// Estados de Frete
+const fallbackImage =
+  "https://via.placeholder.com/300x400/f5f5f5/999999"
+
 const zipCode = ref("")
 const shippingValue = ref(0)
 const shippingLoading = ref(false)
 const addressResult = ref(null)
 
-// Estados de Cupom
 const couponInput = ref("")
 const discount = ref(0)
 
-// Estados de Finalização
 const checkoutLoading = ref(false)
 
-// LÓGICA DE FRETE (ViaCEP)
+const subtotal = computed(() => {
+  return getTotal()
+})
+
+const amountToFreeShipping = computed(() => {
+  const remaining = 1500 - subtotal.value
+  return remaining > 0 ? remaining : 0
+})
+
+const finalTotal = computed(() => {
+  return subtotal.value + shippingValue.value - discount.value
+})
+
 const handleShipping = async () => {
-  const cleanZip = zipCode.value.replace(/\D/g, "")
-  if (cleanZip.length < 8) return
-  
+  const cep = zipCode.value.replace(/\D/g, "")
+
+  if (cep.length !== 8) {
+    return alert("Digite um CEP válido")
+  }
+
   shippingLoading.value = true
-  addressResult.value = null
-  
+
   try {
-    const { data } = await axios.get(`https://viacep.com.br/ws/${cleanZip}/json/`)
-    if (data.erro) throw new Error()
-    
-    addressResult.value = data
-    // Regra: SP = R$25, outros = R$50. Acima de 1500 = Grátis.
-    if (getTotal() >= 1500) {
+    const response = await axios.get(
+      `https://viacep.com.br/ws/${cep}/json/`
+    )
+
+    if (response.data.erro) {
+      throw new Error()
+    }
+
+    addressResult.value = response.data
+
+    if (subtotal.value >= 1500) {
       shippingValue.value = 0
     } else {
-      shippingValue.value = data.uf === "SP" ? 25 : 50
+      shippingValue.value =
+        response.data.uf === "SP" ? 25 : 45
     }
-  } catch (e) {
-    alert("CEP não encontrado. Tente novamente.")
+
+  } catch (error) {
+    alert("CEP não encontrado")
   } finally {
     shippingLoading.value = false
   }
 }
 
-// LÓGICA DE CUPOM (Primeira Compra)
 const applyCoupon = () => {
-  const code = couponInput.value.toUpperCase().trim()
+  const code = couponInput.value
+    .trim()
+    .toUpperCase()
+
   if (code === "WELCOME15") {
-    discount.value = getTotal() * 0.15
-  } else if (code === "IVY10") {
-    discount.value = getTotal() * 0.10
-  } else {
-    alert("Este cupom não é válido.")
-    couponInput.value = ""
+    discount.value = subtotal.value * 0.15
+    return
   }
+
+  if (code === "IVY10") {
+    discount.value = subtotal.value * 0.10
+    return
+  }
+
+  discount.value = 0
+
+  alert("Cupom inválido")
 }
 
-// CÁLCULOS DINÂMICOS
-const amountToFreeShipping = computed(() => 1500 - getTotal())
-const finalTotal = computed(() => (getTotal() + shippingValue.value) - discount.value)
-
-// FINALIZAR
 const handleFinalize = async () => {
   const token = localStorage.getItem("token")
-  if (!token) return router.push("/login?redirect=cart")
-  
-  checkoutLoading.value = true
-  try {
-    // Sincronização com Backend (Simulado/Real conforme seu setup)
-    await axios.post("http://localhost:3000/api/orders", {
-      items: cart.items,
-      total: finalTotal.value,
-      address: addressResult.value
-    }, { headers: { Authorization: `Bearer ${token}` } })
 
-    alert("Pedido realizado com sucesso!")
-    cart.items = [] // Limpa a sacola
+  if (!token) {
+    router.push("/login?redirect=cart")
+    return
+  }
+
+  checkoutLoading.value = true
+
+  try {
+    await axios.post(
+      "http://localhost:3000/api/orders",
+      {
+        items: cart.items,
+        total: finalTotal.value,
+        address: addressResult.value
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+
+    alert("Pedido realizado com sucesso")
+
+    cart.items = []
+
     router.push("/perfil")
-  } catch (err) {
-    alert("Erro ao processar compra.")
+
+  } catch (error) {
+    alert("Erro ao finalizar pedido")
   } finally {
     checkoutLoading.value = false
   }
@@ -252,120 +486,403 @@ const handleFinalize = async () => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;500;600&display=swap');
 
 .cart-page {
-  background: #fff;
   min-height: 100vh;
+  background: #ffffff;
   padding: 60px 0;
   font-family: 'Inter', sans-serif;
-  color: #111;
 }
 
-.container { max-width: 1150px; margin: 0 auto; padding: 0 25px; }
+.container {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
 
-/* --- ESTADO VAZIO (LUXO) --- */
-.empty-state-luxury {
+/* EMPTY */
+
+.empty-cart {
+  min-height: 70vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 60vh;
+  justify-content: center;
+  flex-direction: column;
   text-align: center;
 }
 
-.icon-wrapper { position: relative; margin-bottom: 25px; }
-.dot-decoration { 
-  position: absolute; top: -2px; right: -2px; 
-  width: 8px; height: 8px; background: #d4af37; border-radius: 50%; 
+.empty-icon {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  border: 1px solid #ececec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
 }
 
-.empty-title { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; margin-bottom: 15px; }
-.empty-subtitle { color: #777; line-height: 1.6; margin-bottom: 35px; }
-
-.first-purchase-banner {
-  background: #f9f9f9; border: 1px solid #eee;
-  padding: 25px; margin-bottom: 35px; border-radius: 4px;
+.empty-cart h1 {
+  font-size: 42px;
+  margin-bottom: 14px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
 }
-.tag { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #d4af37; display: block; margin-bottom: 8px; }
-.promo-code { border: 1px dashed #aaa; padding: 2px 8px; background: #fff; }
 
-.btn-luxury {
-  display: inline-block; background: #111; color: #fff;
-  padding: 18px 50px; text-decoration: none; text-transform: uppercase;
-  font-size: 12px; letter-spacing: 2px; font-weight: 600; transition: 0.3s;
+.empty-cart p {
+  color: #777;
+  max-width: 500px;
+  line-height: 1.7;
 }
-.btn-luxury:hover { background: #333; transform: translateY(-2px); }
 
-.quick-links { margin-top: 40px; font-size: 12px; display: flex; justify-content: center; gap: 15px; color: #999; }
-.quick-links a { color: #111; text-decoration: none; border-bottom: 1px solid #ddd; }
-
-/* --- CARRINHO ATIVO --- */
-.benefit-bar { margin-bottom: 50px; }
-.bar-text { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 10px; }
-.bar-bg { height: 2px; background: #f0f0f0; }
-.bar-fill { height: 100%; background: #111; transition: width 0.8s ease; }
-.success-text { color: #28a745; font-weight: 600; }
-
-.cart-grid { display: grid; grid-template-columns: 1fr 380px; gap: 70px; align-items: start; }
-
-/* SACOLA */
-.section-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; margin-bottom: 40px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
-.count { font-family: 'Inter', sans-serif; font-size: 14px; color: #aaa; margin-left: 10px; }
-
-.product-card { display: flex; gap: 25px; padding-bottom: 30px; border-bottom: 1px solid #f7f7f7; margin-bottom: 30px; }
-.product-img img { width: 130px; height: 165px; object-fit: cover; }
-.product-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-.info-top { display: flex; justify-content: space-between; }
-.info-top h3 { font-size: 18px; font-weight: 500; margin: 0; }
-.sku { font-size: 11px; color: #bbb; text-transform: uppercase; margin-top: 5px; }
-.remove-btn { background: none; border: none; color: #ddd; cursor: pointer; transition: 0.2s; }
-.remove-btn:hover { color: #111; }
-
-.qty-control { display: flex; align-items: center; border: 1px solid #f0f0f0; }
-.qty-control button { width: 32px; height: 32px; background: none; border: none; cursor: pointer; }
-.qty-control span { width: 35px; text-align: center; font-size: 13px; }
-.total-item-price { font-weight: 600; font-size: 17px; }
-
-/* RESUMO */
-.summary-box { background: #fcfcfc; border: 1px solid #f0f0f0; padding: 35px; position: sticky; top: 40px; }
-.summary-title { font-size: 22px; margin-bottom: 30px; }
-.summary-field { margin-bottom: 25px; }
-.summary-field label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 10px; }
-
-.input-inline { display: flex; border-bottom: 1px solid #ddd; align-items: center; }
-.input-inline input { flex: 1; background: none; border: none; padding: 10px 0; outline: none; font-size: 14px; }
-.input-inline button { background: none; border: none; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; padding-left: 10px; }
-.input-inline button.applied { color: #28a745; }
-
-.address-detail, .discount-msg { font-size: 11px; color: #28a745; margin-top: 8px; font-weight: 500; }
-
-.bill-details { margin-top: 35px; border-top: 1px solid #eee; padding-top: 25px; }
-.bill-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; }
-.discount-val, .free { color: #28a745; }
-
-.bill-total { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; padding-top: 25px; border-top: 1px solid #111; }
-.total-group { text-align: right; }
-.total-group strong { font-size: 26px; display: block; letter-spacing: -1px; }
-.total-group small { font-size: 11px; color: #999; }
-
-.checkout-btn { 
-  width: 100%; background: #111; color: #fff; border: none; padding: 20px; 
-  margin-top: 35px; text-transform: uppercase; font-weight: 600; letter-spacing: 2px; cursor: pointer;
-  display: flex; justify-content: center; align-items: center;
+.shop-btn {
+  margin-top: 35px;
+  background: #111;
+  color: white;
+  text-decoration: none;
+  padding: 18px 45px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+  transition: 0.3s;
 }
-.checkout-btn:hover { background: #333; }
-.security-tag { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 10px; color: #ccc; margin-top: 20px; text-transform: uppercase; }
 
-.spinner { animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.shop-btn:hover {
+  transform: translateY(-3px);
+}
 
-/* ANIMAÇÕES */
-.fade-list-enter-active, .fade-list-leave-active { transition: all 0.4s ease; }
-.fade-list-enter-from, .fade-list-leave-to { opacity: 0; transform: translateX(-20px); }
+.empty-links {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+}
 
-@media (max-width: 900px) {
-  .cart-grid { grid-template-columns: 1fr; gap: 40px; }
-  .order-summary { order: -1; }
-  .empty-title { font-size: 2rem; }
+.empty-links a {
+  text-decoration: none;
+  color: #888;
+}
+
+/* TOPO */
+
+.cart-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  gap: 20px;
+}
+
+.title {
+  font-size: 44px;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.items-count {
+  color: #999;
+  font-size: 14px;
+}
+
+.shipping-banner {
+  background: #fafafa;
+  border: 1px solid #ececec;
+  padding: 15px 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+.free-text {
+  color: #1e9b58;
+}
+
+/* GRID */
+
+.cart-grid {
+  display: grid;
+  grid-template-columns: 1fr 390px;
+  gap: 55px;
+}
+
+/* PRODUTOS */
+
+.products {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.product-card {
+  display: flex;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.image-wrapper img {
+  width: 150px;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 18px;
+  background: #f8f8f8;
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.top-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.top-info h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.reference {
+  font-size: 11px;
+  color: #999;
+  letter-spacing: 1px;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #bbb;
+  transition: 0.2s;
+}
+
+.remove-btn:hover {
+  color: #111;
+}
+
+.bottom-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quantity-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.quantity-box button {
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: white;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.quantity-box span {
+  width: 45px;
+  text-align: center;
+}
+
+.price {
+  font-size: 22px;
+}
+
+/* SUMMARY */
+
+.summary-card {
+  border: 1px solid #ececec;
+  border-radius: 24px;
+  padding: 35px;
+  position: sticky;
+  top: 30px;
+}
+
+.summary-card h2 {
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.field {
+  margin-bottom: 26px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.input-group {
+  display: flex;
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.input-group input {
+  flex: 1;
+  border: none;
+  padding: 16px;
+  outline: none;
+}
+
+.input-group button {
+  width: 110px;
+  border: none;
+  background: #111;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.success-msg {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #1e9b58;
+}
+
+.values {
+  margin-top: 35px;
+  border-top: 1px solid #efefef;
+  padding-top: 25px;
+}
+
+.value-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.discount {
+  color: #1e9b58;
+}
+
+.total-box {
+  margin-top: 25px;
+  padding-top: 25px;
+  border-top: 1px solid #111;
+  display: flex;
+  justify-content: space-between;
+}
+
+.total-values {
+  text-align: right;
+}
+
+.total-values strong {
+  display: block;
+  font-size: 34px;
+}
+
+.total-values small {
+  color: #999;
+}
+
+.checkout-btn {
+  width: 100%;
+  margin-top: 35px;
+  border: none;
+  background: #111;
+  color: white;
+  height: 60px;
+  border-radius: 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.checkout-btn:hover {
+  transform: translateY(-2px);
+}
+
+.secure {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  color: #999;
+  font-size: 12px;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ANIMAÇÃO */
+
+.cart-animation-enter-active,
+.cart-animation-leave-active {
+  transition: all 0.4s ease;
+}
+
+.cart-animation-enter-from,
+.cart-animation-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 980px) {
+
+  .cart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    order: -1;
+  }
+
+  .cart-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .product-card {
+    flex-direction: column;
+  }
+
+  .image-wrapper img {
+    width: 100%;
+    height: 320px;
+  }
+
+  .bottom-info {
+    margin-top: 20px;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+
 }
 </style>

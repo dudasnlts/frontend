@@ -1,264 +1,636 @@
 <template>
   <div class="auth-scene">
-    <!-- PAINEL VISUAL (EDITORIAL) -->
-    <div class="auth-visual">
+
+    <!-- VISUAL -->
+    <section class="auth-visual">
       <div class="visual-overlay"></div>
+
       <div class="visual-content">
-        <div class="brand-badge">EST. 2024</div>
-        <span class="visual-tag">Coleção Heritage</span>
-        <h2 class="visual-title">Onde a arte<br/>encontra o <em>eterno</em></h2>
-        <p class="visual-sub">Sua jornada na alta joalheria começa com um olhar exclusivo.</p>
-        
+
+        <div class="brand-badge">
+          EST. 2024
+        </div>
+
+        <span class="visual-tag">
+          Coleção Heritage
+        </span>
+
+        <h1 class="visual-title">
+          Onde a arte<br />
+          encontra o <em>eterno</em>
+        </h1>
+
+        <p class="visual-sub">
+          Sua jornada na alta joalheria começa com um olhar exclusivo.
+        </p>
+
         <div class="feature-list">
+
           <div class="feature-item">
             <span class="dot"></span>
             <p>Curadoria de Diamantes Certificados</p>
           </div>
+
           <div class="feature-item">
             <span class="dot"></span>
             <p>Atendimento VIP Personalizado</p>
           </div>
-        </div>
-      </div>
-      <!-- Elemento decorativo flutuante -->
-      <div class="floating-shape"></div>
-    </div>
 
-    <!-- PAINEL DO FORMULÁRIO (CLEAN LUXURY) -->
-    <div class="auth-panel">
+        </div>
+
+      </div>
+
+      <div class="floating-shape"></div>
+    </section>
+
+    <!-- FORM -->
+    <section class="auth-panel">
+
       <div class="auth-inner">
+
+        <!-- HEADER -->
         <header class="auth-header">
-          <router-link to="/" class="auth-logo">IVY</router-link>
-          <p class="auth-welcome">Bem-vindo à nossa Maison.</p>
+
+          <router-link
+            to="/"
+            class="auth-logo"
+          >
+            IVY
+          </router-link>
+
+          <p class="auth-welcome">
+            Bem-vindo à nossa Maison.
+          </p>
+
         </header>
 
+        <!-- TABS -->
         <div class="auth-tabs">
-          <button :class="{ active: !isRegistering }" @click="switchMode(false)">Entrar</button>
-          <button :class="{ active: isRegistering }" @click="switchMode(true)">Cadastrar</button>
-          <div class="tab-indicator" :style="{ transform: isRegistering ? 'translateX(100%)' : 'translateX(0)' }"></div>
+
+          <button
+            type="button"
+            :class="{ active: !isRegistering }"
+            @click="switchMode(false)"
+          >
+            Entrar
+          </button>
+
+          <button
+            type="button"
+            :class="{ active: isRegistering }"
+            @click="switchMode(true)"
+          >
+            Cadastrar
+          </button>
+
+          <div
+            class="tab-indicator"
+            :style="{
+              transform: isRegistering
+                ? 'translateX(100%)'
+                : 'translateX(0)'
+            }"
+          ></div>
+
         </div>
 
-        <Transition name="page-slide" mode="out-in">
-          <form :key="isRegistering ? 'register' : 'login'" @submit.prevent="handleAuth" class="auth-form">
-            
-            <div v-if="isRegistering" class="field-group">
-              <label>Nome Completo</label>
+        <!-- FORM -->
+        <Transition
+          name="page-slide"
+          mode="out-in"
+        >
+
+          <form
+            :key="isRegistering ? 'register' : 'login'"
+            class="auth-form"
+            @submit.prevent="handleAuth"
+          >
+
+            <!-- NAME -->
+            <div
+              v-if="isRegistering"
+              class="field-group"
+            >
+
+              <label>
+                Nome Completo
+              </label>
+
               <div class="field-wrap">
-                <input v-model="form.name" type="text" placeholder="Como deseja ser chamado?" />
+
+                <input
+                  v-model="form.name"
+                  type="text"
+                  placeholder="Como deseja ser chamado?"
+                />
+
               </div>
+
             </div>
 
+            <!-- EMAIL -->
             <div class="field-group">
-              <label>E-mail</label>
+
+              <label>
+                E-mail
+              </label>
+
               <div class="field-wrap">
-                <input v-model="form.email" type="email" placeholder="exemplo@maisonivy.com" required />
+
+                <input
+                  v-model="form.email"
+                  type="email"
+                  placeholder="exemplo@ivy.com"
+                  required
+                />
+
               </div>
+
             </div>
 
+            <!-- PASSWORD -->
             <div class="field-group">
+
               <div class="label-row">
-                <label>Senha</label>
-                <a v-if="!isRegistering" href="#" class="forgot-link">Esqueceu?</a>
+
+                <label>
+                  Senha
+                </label>
+
+                <a
+                  v-if="!isRegistering"
+                  href="#"
+                  class="forgot-link"
+                >
+                  Esqueceu?
+                </a>
+
               </div>
+
               <div class="field-wrap">
-                <input v-model="form.password" :type="showPw ? 'text' : 'password'" placeholder="Sua senha secreta" required />
-                <button type="button" class="toggle-pw" @click="showPw = !showPw">
-                  <span v-if="!showPw">MOSTRAR</span>
-                  <span v-else>OCULTAR</span>
+
+                <input
+                  v-model="form.password"
+                  :type="showPw ? 'text' : 'password'"
+                  placeholder="Sua senha"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="toggle-pw"
+                  @click="showPw = !showPw"
+                >
+                  {{ showPw ? 'OCULTAR' : 'MOSTRAR' }}
                 </button>
+
               </div>
+
             </div>
 
-            <!-- Feedback de Erro/Sucesso -->
-            <div v-if="error" class="message error">{{ error }}</div>
-            <div v-if="successMsg" class="message success">{{ successMsg }}</div>
+            <!-- ERROR -->
+            <div
+              v-if="error"
+              class="message error"
+            >
+              {{ error }}
+            </div>
 
-            <button type="submit" class="btn-primary" :disabled="loading">
-              <span v-if="!loading">{{ isRegistering ? 'Criar Conta Exclusiva' : 'Acessar Conta' }}</span>
-              <div v-else class="loader"></div>
+            <!-- SUCCESS -->
+            <div
+              v-if="successMsg"
+              class="message success"
+            >
+              {{ successMsg }}
+            </div>
+
+            <!-- BUTTON -->
+            <button
+              type="submit"
+              class="btn-primary"
+              :disabled="loading"
+            >
+
+              <span v-if="!loading">
+
+                {{
+                  isRegistering
+                    ? 'Criar Conta'
+                    : 'Entrar'
+                }}
+
+              </span>
+
+              <div
+                v-else
+                class="loader"
+              ></div>
+
             </button>
 
+            <!-- DIVIDER -->
             <div class="divider-row">
-              <span>Ou use suas redes</span>
+              <span>Ou continue com</span>
             </div>
 
+            <!-- SOCIAL -->
             <div class="social-row">
-              <button type="button" class="btn-social" @click="loginGoogle">Google</button>
-              <button type="button" class="btn-social" @click="loginApple">Apple</button>
+
+              <button
+                type="button"
+                class="btn-social"
+                @click="loginGoogle"
+              >
+                Google
+              </button>
+
+              <button
+                type="button"
+                class="btn-social"
+                @click="loginApple"
+              >
+                Apple
+              </button>
+
             </div>
+
           </form>
+
         </Transition>
 
+        <!-- FOOTER -->
         <footer class="auth-footer">
-          <p>Ao entrar, você aceita nossos <a href="#">Termos de Luxo</a> e <a href="#">Privacidade</a>.</p>
+
+          <p>
+            Ao continuar você aceita nossos
+            <a href="#">Termos</a>
+            e
+            <a href="#">Privacidade</a>.
+          </p>
+
         </footer>
+
       </div>
-    </div>
+
+    </section>
+
   </div>
 </template>
 
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap');
+<script setup>
+import { ref, reactive } from "vue"
+import { useRouter } from "vue-router"
 
-/* Variáveis de Estilo */
-:host {
+const router = useRouter()
+
+const isRegistering = ref(false)
+
+const showPw = ref(false)
+
+const loading = ref(false)
+
+const error = ref("")
+
+const successMsg = ref("")
+
+const form = reactive({
+  name: "",
+  email: "",
+  password: ""
+})
+
+const switchMode = (mode) => {
+
+  isRegistering.value = mode
+
+  error.value = ""
+  successMsg.value = ""
+
+  form.name = ""
+  form.email = ""
+  form.password = ""
+}
+
+const handleAuth = async () => {
+
+  try {
+
+    loading.value = true
+
+    error.value = ""
+    successMsg.value = ""
+
+    // VALIDATION
+    if (!form.email || !form.password) {
+
+      error.value = "Preencha todos os campos"
+
+      return
+    }
+
+    if (
+      isRegistering.value &&
+      !form.name
+    ) {
+
+      error.value = "Digite seu nome"
+
+      return
+    }
+
+    /*
+      EXEMPLO API
+      SUBSTITUA PELA SUA
+    */
+
+    const response = {
+      data: {
+        token: "123456",
+        user: {
+          name: form.name || "Cliente",
+          email: form.email
+        }
+      }
+    }
+
+    /*
+      PROTEÇÃO
+    */
+
+    const user = response?.data?.user
+
+    if (!user?.email) {
+
+      error.value = "Erro ao autenticar"
+
+      return
+    }
+
+    /*
+      SAVE
+    */
+
+    localStorage.setItem(
+      "token",
+      response?.data?.token || ""
+    )
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(user)
+    )
+
+    successMsg.value = isRegistering.value
+      ? "Conta criada com sucesso"
+      : "Login realizado com sucesso"
+
+    setTimeout(() => {
+
+      router.push("/")
+
+    }, 1200)
+
+  } catch (err) {
+
+    console.error(err)
+
+    error.value = "Erro interno"
+
+  } finally {
+
+    loading.value = false
+  }
+}
+
+const loginGoogle = () => {
+
+  console.log("Google login")
+}
+
+const loginApple = () => {
+
+  console.log("Apple login")
+}
+</script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap');
+
+:root {
   --gold: #c5a059;
   --dark: #121212;
-  --bg-soft: #fcfbf9;
+  --soft: #faf8f5;
 }
 
 .auth-scene {
-  display: flex;
   min-height: 100vh;
-  background: #fff;
+  display: flex;
+  background: white;
   font-family: 'Montserrat', sans-serif;
-  color: var(--dark);
 }
 
-/* --- PAINEL VISUAL --- */
+/* VISUAL */
+
 .auth-visual {
-  flex: 1.2;
+  flex: 1.15;
+
   position: relative;
-  background-color: #0f1115;
-  background-image: url('https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2069&auto=format&fit=crop'); /* Imagem de joia luxuosa */
+
+  background:
+    url('https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=2070&auto=format&fit=crop');
+
   background-size: cover;
   background-position: center;
+
   display: flex;
   align-items: center;
-  padding: 80px;
+
   overflow: hidden;
+
+  padding: 90px;
 }
 
 .visual-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(15,17,21,0.95) 20%, rgba(15,17,21,0.4));
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10,10,12,.92),
+      rgba(10,10,12,.55),
+      rgba(10,10,12,.18)
+    );
 }
 
 .visual-content {
   position: relative;
-  z-index: 10;
-  max-width: 500px;
+  z-index: 2;
+
+  max-width: 520px;
 }
 
 .brand-badge {
+  display: inline-flex;
+
+  padding: 6px 14px;
+
+  border: 1px solid rgba(255,255,255,.16);
+
+  color: var(--gold);
+
   font-size: 10px;
   letter-spacing: 3px;
-  border: 1px solid rgba(255,255,255,0.2);
-  display: inline-block;
-  padding: 4px 12px;
-  color: #c5a059;
-  margin-bottom: 30px;
+
+  margin-bottom: 34px;
 }
 
 .visual-tag {
   display: block;
-  font-size: 12px;
-  text-transform: uppercase;
+
+  color: rgba(255,255,255,.58);
+
+  font-size: 11px;
   letter-spacing: 4px;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 15px;
+  text-transform: uppercase;
+
+  margin-bottom: 16px;
 }
 
 .visual-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(40px, 5vw, 64px);
-  color: #fff;
-  line-height: 1;
-  font-weight: 300;
-  margin-bottom: 25px;
+
+  color: white;
+
+  font-size: clamp(48px,5vw,78px);
+
+  line-height: .95;
+  font-weight: 400;
+
+  margin-bottom: 24px;
 }
 
 .visual-title em {
+  color: var(--gold);
   font-style: italic;
-  color: #c5a059;
 }
 
 .visual-sub {
-  color: rgba(255,255,255,0.6);
-  font-weight: 300;
-  line-height: 1.6;
-  margin-bottom: 40px;
+  color: rgba(255,255,255,.7);
+
+  line-height: 1.8;
+
+  max-width: 460px;
+
+  margin-bottom: 42px;
 }
 
 .feature-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .feature-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: rgba(255,255,255,0.8);
+
+  color: rgba(255,255,255,.88);
+
   font-size: 13px;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
-  background: #c5a059;
+  width: 7px;
+  height: 7px;
+
   border-radius: 50%;
+
+  background: var(--gold);
 }
 
-/* --- PAINEL FORMULÁRIO --- */
+/* PANEL */
+
 .auth-panel {
   flex: 1;
-  background: var(--bg-soft);
+
+  background: var(--soft);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 40px;
 }
 
 .auth-inner {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
 }
 
 .auth-header {
   text-align: center;
+
   margin-bottom: 50px;
 }
 
 .auth-logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 42px;
-  letter-spacing: 12px;
-  color: var(--dark);
   text-decoration: none;
-  font-weight: 500;
+
+  font-family: 'Cormorant Garamond', serif;
+
+  font-size: 48px;
+  letter-spacing: 12px;
+
+  color: var(--dark);
 }
 
 .auth-welcome {
+  margin-top: 12px;
+
+  color: #8d8d8d;
+
   font-size: 12px;
-  color: #888;
-  margin-top: 10px;
-  letter-spacing: 1px;
 }
 
-/* ABAS ESTILIZADAS */
+/* TABS */
+
 .auth-tabs {
-  display: flex;
-  background: #f0ede8;
-  padding: 5px;
-  border-radius: 50px;
   position: relative;
+
+  display: flex;
+
+  background: #ede8df;
+
+  border-radius: 999px;
+
+  padding: 5px;
+
   margin-bottom: 40px;
 }
 
 .auth-tabs button {
   flex: 1;
-  padding: 12px;
+
+  height: 48px;
+
   border: none;
-  background: none;
-  font-size: 12px;
-  font-weight: 600;
-  color: #999;
+  background: transparent;
+
+  border-radius: 999px;
+
   cursor: pointer;
-  z-index: 1;
-  transition: 0.4s;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #8d8d8d;
+
+  position: relative;
+  z-index: 2;
+
+  transition: .3s;
 }
 
 .auth-tabs button.active {
@@ -267,15 +639,22 @@
 
 .tab-indicator {
   position: absolute;
+
+  left: 5px;
+  top: 5px;
+
   width: calc(50% - 5px);
   height: calc(100% - 10px);
-  background: #fff;
-  border-radius: 50px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+
+  background: white;
+
+  border-radius: 999px;
+
+  transition: .45s cubic-bezier(.19,1,.22,1);
 }
 
-/* CAMPOS DE ENTRADA */
+/* FORM */
+
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -283,26 +662,32 @@
 }
 
 .field-group label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #555;
-  margin-bottom: 8px;
   display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  color: #555;
 }
 
 .label-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .field-wrap {
-  border-bottom: 1px solid #dcdad5;
   display: flex;
   align-items: center;
-  transition: 0.3s;
+
+  border-bottom: 1px solid #d8d8d8;
+
+  transition: .3s;
 }
 
 .field-wrap:focus-within {
@@ -311,143 +696,239 @@
 
 .field-wrap input {
   flex: 1;
+
   border: none;
-  padding: 12px 0;
-  background: transparent;
-  font-family: inherit;
-  font-size: 14px;
   outline: none;
+
+  background: transparent;
+
+  height: 52px;
+
+  font-size: 14px;
+
+  font-family: inherit;
 }
 
 .toggle-pw {
-  background: none;
   border: none;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #aaa;
+  background: none;
+
   cursor: pointer;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #999;
 }
 
 .forgot-link {
   font-size: 11px;
+
   color: #999;
+
   text-decoration: none;
 }
 
-/* BOTÕES */
+/* BUTTON */
+
 .btn-primary {
+  height: 58px;
+
+  border: none;
+  border-radius: 8px;
+
   background: var(--dark);
   color: white;
-  border: none;
-  padding: 18px;
-  border-radius: 4px;
+
+  cursor: pointer;
+
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
+
   letter-spacing: 2px;
   text-transform: uppercase;
-  cursor: pointer;
-  transition: 0.3s;
-  margin-top: 10px;
+
+  transition: .3s;
+
+  margin-top: 8px;
 }
 
 .btn-primary:hover {
-  background: #2a2a2a;
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+  background: #232323;
 }
+
+.btn-primary:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+/* DIVIDER */
 
 .divider-row {
-  text-align: center;
   position: relative;
-  margin: 10px 0;
-}
 
-.divider-row span {
-  font-size: 10px;
-  color: #bbb;
-  background: var(--bg-soft);
-  padding: 0 15px;
-  position: relative;
-  z-index: 1;
+  text-align: center;
+
+  margin: 8px 0;
 }
 
 .divider-row::before {
-  content: '';
+  content: "";
+
   position: absolute;
-  width: 100%;
-  height: 1px;
-  background: #e0e0e0;
   left: 0;
   top: 50%;
+
+  width: 100%;
+  height: 1px;
+
+  background: #ddd;
 }
+
+.divider-row span {
+  position: relative;
+  z-index: 2;
+
+  background: var(--soft);
+
+  padding: 0 16px;
+
+  font-size: 10px;
+  color: #aaa;
+}
+
+/* SOCIAL */
 
 .social-row {
   display: flex;
-  gap: 15px;
+  gap: 14px;
 }
 
 .btn-social {
   flex: 1;
-  padding: 12px;
-  border: 1px solid #e0e0e0;
-  background: #fff;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+
+  height: 50px;
+
+  border-radius: 8px;
+  border: 1px solid #ddd;
+
+  background: white;
+
   cursor: pointer;
-  transition: 0.3s;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  transition: .3s;
 }
 
 .btn-social:hover {
   border-color: var(--dark);
-  background: #f9f9f9;
 }
 
-/* MENSAGENS */
+/* MESSAGE */
+
 .message {
+  padding: 14px;
+
+  border-radius: 8px;
+
   font-size: 12px;
-  padding: 10px;
-  border-radius: 4px;
 }
-.error { color: #a94442; background: #f2dede; }
-.success { color: #3c763d; background: #dff0d8; }
+
+.error {
+  background: #fdeaea;
+  color: #a94442;
+}
+
+.success {
+  background: #e7f7ea;
+  color: #256d3f;
+}
+
+/* FOOTER */
 
 .auth-footer {
   margin-top: 40px;
+
   text-align: center;
+
   font-size: 11px;
   color: #999;
+
   line-height: 1.8;
 }
 
 .auth-footer a {
   color: var(--dark);
-  text-decoration: underline;
 }
 
-/* ANIMAÇÕES */
-.page-slide-enter-active, .page-slide-leave-active {
-  transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.page-slide-enter-from { opacity: 0; transform: translateY(20px); }
-.page-slide-leave-to { opacity: 0; transform: translateY(-20px); }
-
-@media (max-width: 1024px) {
-  .auth-visual { display: none; }
-}
+/* LOADER */
 
 .loader {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
+  width: 18px;
+  height: 18px;
+
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: white;
+
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto;
+
+  margin: auto;
+
+  animation: spin .7s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* TRANSITION */
+
+.page-slide-enter-active,
+.page-slide-leave-active {
+  transition: .35s ease;
+}
+
+.page-slide-enter-from {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.page-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-18px);
+}
+
+/* MOBILE */
+
+@media (max-width: 1024px) {
+
+  .auth-visual {
+    display: none;
+  }
+
+  .auth-panel {
+    flex: 1;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .auth-panel {
+    padding: 24px;
+  }
+
+  .auth-logo {
+    font-size: 40px;
+  }
+
+  .social-row {
+    flex-direction: column;
+  }
 }
 </style>
