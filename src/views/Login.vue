@@ -1,71 +1,69 @@
 <template>
-  <div class="auth-scene">
+  <section class="auth-wrapper">
 
-    <!-- VISUAL -->
-    <section class="auth-visual">
-      <div class="visual-overlay"></div>
+    <!-- LEFT -->
+    <div class="auth-visual">
 
+      <!-- VIDEO -->
+      <video
+        class="bg-video"
+        autoplay
+        muted
+        loop
+        playsinline
+      >
+        <source
+          src="http://localhost:3000/uploads/luxo.mp4"
+          type="video/mp4"
+        />
+      </video>
+
+      <!-- OVERLAY -->
+      <div class="overlay"></div>
+
+      <!-- CONTENT -->
       <div class="visual-content">
 
-        <div class="brand-badge">
-          EST. 2024
-        </div>
-
-        <span class="visual-tag">
-          Coleção Heritage
-        </span>
-
-        <h1 class="visual-title">
-          Onde a arte<br />
-          encontra o <em>eterno</em>
+        
+        <h1>
+          Elegância<br />
+          Atemporal
         </h1>
 
-        <p class="visual-sub">
-          Sua jornada na alta joalheria começa com um olhar exclusivo.
-        </p>
-
-        <div class="feature-list">
-
-          <div class="feature-item">
-            <span class="dot"></span>
-            <p>Curadoria de Diamantes Certificados</p>
-          </div>
-
-          <div class="feature-item">
-            <span class="dot"></span>
-            <p>Atendimento VIP Personalizado</p>
-          </div>
-
-        </div>
+       
 
       </div>
 
-      <div class="floating-shape"></div>
-    </section>
+    </div>
 
-    <!-- FORM -->
-    <section class="auth-panel">
+    <!-- RIGHT -->
+    <div class="auth-panel">
 
-      <div class="auth-inner">
+      <div class="auth-box">
 
         <!-- HEADER -->
-        <header class="auth-header">
+        <div class="auth-header">
 
-          <router-link
-            to="/"
-            class="auth-logo"
-          >
-            IVY
-          </router-link>
+          <h2>
+            {{
+              isRegistering
+                ? "Criar Conta"
+                : "Bem-vinda"
+            }}
+          </h2>
 
-          <p class="auth-welcome">
-            Bem-vindo à nossa Maison.
+          <p>
+            {{
+              isRegistering
+                ? "Cadastre-se para acessar o universo IVY."
+                : "Entre para continuar sua experiência."
+            }}
           </p>
 
-        </header>
+        </div>
 
         <!-- TABS -->
-        <div class="auth-tabs">
+        <div class="tabs">
 
           <button
             type="button"
@@ -80,201 +78,155 @@
             :class="{ active: isRegistering }"
             @click="switchMode(true)"
           >
-            Cadastrar
+            Cadastro
           </button>
-
-          <div
-            class="tab-indicator"
-            :style="{
-              transform: isRegistering
-                ? 'translateX(100%)'
-                : 'translateX(0)'
-            }"
-          ></div>
 
         </div>
 
         <!-- FORM -->
-        <Transition
-          name="page-slide"
-          mode="out-in"
+        <form
+          class="auth-form"
+          @submit.prevent="handleAuth"
         >
 
-          <form
-            :key="isRegistering ? 'register' : 'login'"
-            class="auth-form"
-            @submit.prevent="handleAuth"
+          <!-- NAME -->
+          <div
+            v-if="isRegistering"
+            class="input-group"
           >
 
-            <!-- NAME -->
+            <label>Nome</label>
+
+            <input
+              v-model="form.name"
+              type="text"
+              placeholder="Seu nome"
+            />
+
+          </div>
+
+          <!-- EMAIL -->
+          <div class="input-group">
+
+            <label>E-mail</label>
+
+            <input
+              v-model="form.email"
+              type="email"
+              placeholder="exemplo@email.com"
+              required
+            />
+
+          </div>
+
+          <!-- PASSWORD -->
+          <div class="input-group">
+
+            <div class="label-row">
+
+              <label>Senha</label>
+
+              <a
+                v-if="!isRegistering"
+                href="#"
+              >
+                Esqueceu?
+              </a>
+
+            </div>
+
+            <div class="password-wrap">
+
+              <input
+                v-model="form.password"
+                :type="showPw ? 'text' : 'password'"
+                placeholder="Sua senha"
+                required
+              />
+
+              <button
+                type="button"
+                class="show-password"
+                @click="showPw = !showPw"
+              >
+                {{ showPw ? "Ocultar" : "Mostrar" }}
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- ERROR -->
+          <div
+            v-if="error"
+            class="message error"
+          >
+            {{ error }}
+          </div>
+
+          <!-- SUCCESS -->
+          <div
+            v-if="successMsg"
+            class="message success"
+          >
+            {{ successMsg }}
+          </div>
+
+          <!-- BUTTON -->
+          <button
+            class="submit-btn"
+            type="submit"
+            :disabled="loading"
+          >
+
+            <span v-if="!loading">
+
+              {{
+                isRegistering
+                  ? "Criar Conta"
+                  : "Entrar"
+              }}
+
+            </span>
+
             <div
-              v-if="isRegistering"
-              class="field-group"
-            >
+              v-else
+              class="loader"
+            ></div>
 
-              <label>
-                Nome Completo
-              </label>
+          </button>
 
-              <div class="field-wrap">
+          <!-- DIVIDER -->
+          <div class="divider">
+            <span>ou continue com</span>
+          </div>
 
-                <input
-                  v-model="form.name"
-                  type="text"
-                  placeholder="Como deseja ser chamado?"
-                />
+          <!-- SOCIAL -->
+          <div class="socials">
 
-              </div>
-
-            </div>
-
-            <!-- EMAIL -->
-            <div class="field-group">
-
-              <label>
-                E-mail
-              </label>
-
-              <div class="field-wrap">
-
-                <input
-                  v-model="form.email"
-                  type="email"
-                  placeholder="exemplo@ivy.com"
-                  required
-                />
-
-              </div>
-
-            </div>
-
-            <!-- PASSWORD -->
-            <div class="field-group">
-
-              <div class="label-row">
-
-                <label>
-                  Senha
-                </label>
-
-                <a
-                  v-if="!isRegistering"
-                  href="#"
-                  class="forgot-link"
-                >
-                  Esqueceu?
-                </a>
-
-              </div>
-
-              <div class="field-wrap">
-
-                <input
-                  v-model="form.password"
-                  :type="showPw ? 'text' : 'password'"
-                  placeholder="Sua senha"
-                  required
-                />
-
-                <button
-                  type="button"
-                  class="toggle-pw"
-                  @click="showPw = !showPw"
-                >
-                  {{ showPw ? 'OCULTAR' : 'MOSTRAR' }}
-                </button>
-
-              </div>
-
-            </div>
-
-            <!-- ERROR -->
-            <div
-              v-if="error"
-              class="message error"
-            >
-              {{ error }}
-            </div>
-
-            <!-- SUCCESS -->
-            <div
-              v-if="successMsg"
-              class="message success"
-            >
-              {{ successMsg }}
-            </div>
-
-            <!-- BUTTON -->
             <button
-              type="submit"
-              class="btn-primary"
-              :disabled="loading"
+              type="button"
+              class="social-btn"
             >
-
-              <span v-if="!loading">
-
-                {{
-                  isRegistering
-                    ? 'Criar Conta'
-                    : 'Entrar'
-                }}
-
-              </span>
-
-              <div
-                v-else
-                class="loader"
-              ></div>
-
+              Google
             </button>
 
-            <!-- DIVIDER -->
-            <div class="divider-row">
-              <span>Ou continue com</span>
-            </div>
+            <button
+              type="button"
+              class="social-btn"
+            >
+              Apple
+            </button>
 
-            <!-- SOCIAL -->
-            <div class="social-row">
+          </div>
 
-              <button
-                type="button"
-                class="btn-social"
-                @click="loginGoogle"
-              >
-                Google
-              </button>
-
-              <button
-                type="button"
-                class="btn-social"
-                @click="loginApple"
-              >
-                Apple
-              </button>
-
-            </div>
-
-          </form>
-
-        </Transition>
-
-        <!-- FOOTER -->
-        <footer class="auth-footer">
-
-          <p>
-            Ao continuar você aceita nossos
-            <a href="#">Termos</a>
-            e
-            <a href="#">Privacidade</a>.
-          </p>
-
-        </footer>
+        </form>
 
       </div>
 
-    </section>
+    </div>
 
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -314,13 +266,13 @@ const switchMode = (mode) => {
 const handleAuth = async () => {
 
   try {
-
+// hamar função de login do back-end
+// armazenar informações do usuário no localStorage.setItem()
     loading.value = true
 
     error.value = ""
     successMsg.value = ""
 
-    // VALIDATION
     if (!form.email || !form.password) {
 
       error.value = "Preencha todos os campos"
@@ -338,51 +290,10 @@ const handleAuth = async () => {
       return
     }
 
-    /*
-      EXEMPLO API
-      SUBSTITUA PELA SUA
-    */
-
-    const response = {
-      data: {
-        token: "123456",
-        user: {
-          name: form.name || "Cliente",
-          email: form.email
-        }
-      }
-    }
-
-    /*
-      PROTEÇÃO
-    */
-
-    const user = response?.data?.user
-
-    if (!user?.email) {
-
-      error.value = "Erro ao autenticar"
-
-      return
-    }
-
-    /*
-      SAVE
-    */
-
-    localStorage.setItem(
-      "token",
-      response?.data?.token || ""
-    )
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify(user)
-    )
-
-    successMsg.value = isRegistering.value
-      ? "Conta criada com sucesso"
-      : "Login realizado com sucesso"
+    successMsg.value =
+      isRegistering.value
+        ? "Conta criada com sucesso"
+        : "Login realizado com sucesso"
 
     setTimeout(() => {
 
@@ -392,7 +303,7 @@ const handleAuth = async () => {
 
   } catch (err) {
 
-    console.error(err)
+    console.log(err)
 
     error.value = "Erro interno"
 
@@ -401,38 +312,10 @@ const handleAuth = async () => {
     loading.value = false
   }
 }
-
-const loginGoogle = () => {
-
-  console.log("Google login")
-}
-
-const loginApple = () => {
-
-  console.log("Apple login")
-}
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
-
-:root{
-  --gold: #d4af6a;
-  --gold-soft: #b89252;
-
-  --navy: #08111f;
-  --navy-2: #0f1b2e;
-
-  --white: #ffffff;
-  --soft: rgba(255,255,255,.72);
-
-  --border: rgba(255,255,255,.08);
-
-  --shadow:
-    0 10px 40px rgba(0,0,0,.35);
-
-  --radius: 28px;
-}
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
 
 *{
   margin:0;
@@ -440,281 +323,225 @@ const loginApple = () => {
   box-sizing:border-box;
 }
 
-.auth-scene{
+:root{
+  --navy:#081a33;
+  --text:#243447;
+  --soft:#6c7a8c;
+  --line:#e5ecf4;
+  --shadow:0 25px 70px rgba(8,26,51,.12);
+  --radius:32px;
+}
+.auth-wrapper{
   min-height:100vh;
 
-  display:flex;
+  display:grid;
+  grid-template-columns:1.1fr 1fr;
 
-  background:
-    radial-gradient(circle at top left,
-      rgba(212,175,106,.10),
-      transparent 30%),
-
-    radial-gradient(circle at bottom right,
-      rgba(212,175,106,.08),
-      transparent 35%),
-
-    linear-gradient(
-      135deg,
-      #050a13,
-      #08111f 35%,
-      #0d1a2d 100%
-    );
+  background:#f6f8fb;
 
   overflow:hidden;
 
   font-family:'Montserrat',sans-serif;
-
-  position:relative;
 }
-
-/* BACKGROUND GLOW */
-
-.auth-scene::before{
-  content:"";
-
-  position:absolute;
-
-  width:500px;
-  height:500px;
-
-  background:rgba(212,175,106,.08);
-
-  filter:blur(120px);
-
-  border-radius:50%;
-
-  top:-120px;
-  left:-120px;
-}
-
-.auth-scene::after{
-  content:"";
-
-  position:absolute;
-
-  width:420px;
-  height:420px;
-
-  background:rgba(255,255,255,.03);
-
-  filter:blur(100px);
-
-  border-radius:50%;
-
-  right:-100px;
-  bottom:-100px;
-}
-
-/* VISUAL */
+/* LEFT */
 
 .auth-visual{
-  flex:1.15;
-
   position:relative;
+
+  overflow:hidden;
 
   display:flex;
   align-items:center;
 
   padding:90px;
-
-  overflow:hidden;
 }
 
-.auth-visual::before{
-  content:"";
+/* VIDEO */
 
+.bg-video{
   position:absolute;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  z-index:1;
+}
+
+/* OVERLAY */
+
+.overlay{
+  position:absolute;
+
   inset:0;
 
   background:
     linear-gradient(
       90deg,
-      rgba(4,8,15,.92),
-      rgba(4,8,15,.70),
-      rgba(4,8,15,.35)
-    ),
+      rgba(255,255,255,.38),
+      rgba(255,255,255,.12),
+      rgba(255,255,255,.02)
+    );
 
-    url('https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=2070&auto=format&fit=crop');
-
-  background-size:cover;
-  background-position:center;
-
-  transform:scale(1.05);
+  z-index:2;
 }
+
+/* CONTENT */
 
 .visual-content{
   position:relative;
-  z-index:2;
 
-  max-width:560px;
+  z-index:3;
+
+  max-width:540px;
 }
 
-.brand-badge{
+.mini-badge{
   display:inline-flex;
 
-  padding:8px 18px;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  background:rgba(255,255,255,.03);
-
-  backdrop-filter:blur(12px);
+  padding:10px 18px;
 
   border-radius:999px;
 
-  color:var(--gold);
+  background:
+    rgba(255,255,255,.70);
+
+  backdrop-filter:blur(10px);
+
+  border:
+    1px solid rgba(255,255,255,.35);
+
+  color:var(--navy);
 
   font-size:11px;
-  letter-spacing:4px;
+  font-weight:700;
 
-  margin-bottom:36px;
+  letter-spacing:3px;
+
+  margin-bottom:30px;
 }
 
-.visual-tag{
-  display:block;
-
-  color:rgba(255,255,255,.50);
-
-  letter-spacing:5px;
-
-  text-transform:uppercase;
-
-  font-size:11px;
-
-  margin-bottom:18px;
-}
-
-.visual-title{
+.visual-content h1{
   font-family:'Cormorant Garamond',serif;
 
-  color:white;
-
-  font-size:clamp(58px,6vw,88px);
+  font-size:92px;
 
   line-height:.92;
 
-  font-weight:500;
+  color:white;
 
-  margin-bottom:26px;
+  margin-bottom:24px;
+
+  text-shadow:
+    0 10px 40px rgba(0,0,0,.35);
 }
 
-.visual-title em{
-  color:var(--gold);
-  font-style:italic;
-}
-
-.visual-sub{
-  color:rgba(255,255,255,.72);
+.visual-content p{
+  color:rgba(255,255,255,.92);
 
   font-size:15px;
 
   line-height:1.9;
 
-  max-width:470px;
-
   margin-bottom:42px;
+
+  max-width:450px;
 }
 
-.feature-list{
+.benefits{
   display:flex;
   flex-direction:column;
   gap:18px;
 }
 
-.feature-item{
+.benefit{
   display:flex;
   align-items:center;
   gap:14px;
-
-  color:rgba(255,255,255,.88);
-
-  font-size:13px;
 }
 
 .dot{
-  width:8px;
-  height:8px;
+  width:10px;
+  height:10px;
 
   border-radius:50%;
 
-  background:var(--gold);
+  background:white;
 
   box-shadow:
-    0 0 12px rgba(212,175,106,.9);
+    0 0 15px rgba(255,255,255,.45);
 }
 
-/* PANEL */
+.benefit p{
+  margin:0;
+
+  color:white;
+
+  font-size:14px;
+  font-weight:500;
+}
+
+/* RIGHT */
 
 .auth-panel{
-  flex:1;
-
   display:flex;
   align-items:center;
   justify-content:center;
 
-  padding:40px;
+  padding:50px;
 
-  position:relative;
-  z-index:2;
+  background:#f6f8fb;
 }
 
-.auth-inner{
+.auth-box{
   width:100%;
-  max-width:470px;
+  max-width:500px;
 
-  padding:48px;
+  background:white;
 
   border-radius:var(--radius);
 
-  background:
-    rgba(255,255,255,.04);
-
-  backdrop-filter:blur(22px);
-
-  border:1px solid rgba(255,255,255,.08);
+  padding:52px;
 
   box-shadow:var(--shadow);
+
+  border:
+    1px solid rgba(0,0,0,.04);
 }
 
 /* HEADER */
 
 .auth-header{
-  text-align:center;
-
-  margin-bottom:42px;
+  margin-bottom:34px;
 }
 
-.auth-logo{
-  text-decoration:none;
+.auth-header h2{
+  font-size:46px;
+
+  color:var(--navy);
+
+  margin-bottom:10px;
 
   font-family:'Cormorant Garamond',serif;
-
-  font-size:58px;
-
-  letter-spacing:14px;
-
-  color:white;
 }
 
-.auth-welcome{
-  margin-top:10px;
+.auth-header p{
+  color:var(--soft);
 
-  color:rgba(255,255,255,.48);
+  line-height:1.8;
 
-  font-size:13px;
+  font-size:14px;
 }
 
 /* TABS */
 
-.auth-tabs{
-  position:relative;
-
+.tabs{
   display:flex;
 
-  background:rgba(255,255,255,.05);
-
-  border:1px solid rgba(255,255,255,.05);
+  background:#eef3f8;
 
   border-radius:999px;
 
@@ -723,56 +550,33 @@ const loginApple = () => {
   margin-bottom:34px;
 }
 
-.auth-tabs button{
+.tabs button{
   flex:1;
 
-  height:50px;
+  height:56px;
 
   border:none;
-  background:transparent;
-
-  cursor:pointer;
+  background:none;
 
   border-radius:999px;
 
-  color:rgba(255,255,255,.50);
+  cursor:pointer;
 
   font-size:12px;
   font-weight:700;
 
-  letter-spacing:1px;
-
-  position:relative;
-  z-index:2;
+  color:#7f8a99;
 
   transition:.35s;
 }
 
-.auth-tabs button.active{
+.tabs button.active{
+  background:#000;
+
   color:white;
-}
 
-.tab-indicator{
-  position:absolute;
-
-  top:6px;
-  left:6px;
-
-  width:calc(50% - 6px);
-  height:calc(100% - 12px);
-
-  border-radius:999px;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(212,175,106,.22),
-      rgba(212,175,106,.10)
-    );
-
-  border:1px solid rgba(212,175,106,.20);
-
-  transition:.45s cubic-bezier(.19,1,.22,1);
+  box-shadow:
+    0 10px 25px rgba(0,0,0,.12);
 }
 
 /* FORM */
@@ -783,18 +587,43 @@ const loginApple = () => {
   gap:22px;
 }
 
-.field-group label{
+.input-group label{
   display:block;
 
   margin-bottom:10px;
 
-  color:rgba(255,255,255,.65);
+  color:var(--navy);
 
   font-size:11px;
+  font-weight:700;
 
   letter-spacing:2px;
 
   text-transform:uppercase;
+}
+
+.input-group input{
+  width:100%;
+  height:60px;
+
+  border-radius:18px;
+
+  border:1px solid var(--line);
+
+  padding:0 20px;
+
+  outline:none;
+
+  font-size:14px;
+
+  transition:.35s;
+}
+
+.input-group input:focus{
+  border-color:var(--navy);
+
+  box-shadow:
+    0 0 0 5px rgba(8,26,51,.06);
 }
 
 .label-row{
@@ -803,97 +632,51 @@ const loginApple = () => {
   justify-content:space-between;
 }
 
-.field-wrap{
-  height:58px;
+.label-row a{
+  text-decoration:none;
 
-  display:flex;
-  align-items:center;
+  color:var(--navy);
 
-  padding:0 18px;
-
-  border-radius:16px;
-
-  background:
-    rgba(255,255,255,.04);
-
-  border:1px solid rgba(255,255,255,.06);
-
-  transition:.35s;
+  font-size:11px;
 }
 
-.field-wrap:hover{
-  border-color:rgba(212,175,106,.18);
+.password-wrap{
+  position:relative;
 }
 
-.field-wrap:focus-within{
-  border-color:rgba(212,175,106,.45);
+.show-password{
+  position:absolute;
 
-  box-shadow:
-    0 0 0 4px rgba(212,175,106,.08);
-}
+  top:50%;
+  right:18px;
 
-.field-wrap input{
-  flex:1;
+  transform:translateY(-50%);
 
-  border:none;
-  outline:none;
-
-  background:transparent;
-
-  color:white;
-
-  font-size:14px;
-
-  font-family:inherit;
-}
-
-.field-wrap input::placeholder{
-  color:rgba(255,255,255,.28);
-}
-
-.toggle-pw{
   border:none;
   background:none;
 
   cursor:pointer;
 
-  color:var(--gold);
-
-  font-size:10px;
-  font-weight:700;
-
-  letter-spacing:1px;
-}
-
-.forgot-link{
-  text-decoration:none;
-
-  color:rgba(255,255,255,.45);
+  color:var(--navy);
 
   font-size:11px;
+  font-weight:700;
 }
 
 /* BUTTON */
 
-.btn-primary{
-  height:60px;
+.submit-btn{
+  height:62px;
 
   border:none;
 
-  border-radius:18px;
+  border-radius:20px;
+
+  background:#000;
+
+  color:white;
 
   cursor:pointer;
-
-  margin-top:6px;
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--gold),
-      var(--gold-soft)
-    );
-
-  color:#111;
 
   font-size:12px;
   font-weight:800;
@@ -905,17 +688,18 @@ const loginApple = () => {
   transition:.35s;
 }
 
-.btn-primary:hover{
-  transform:
-    translateY(-3px);
+.submit-btn:hover{
+  transform:translateY(-3px);
+
+  background:#111;
 
   box-shadow:
-    0 18px 40px rgba(212,175,106,.18);
+    0 18px 40px rgba(0,0,0,.18);
 }
 
 /* DIVIDER */
 
-.divider-row{
+.divider{
   position:relative;
 
   text-align:center;
@@ -923,66 +707,64 @@ const loginApple = () => {
   margin:8px 0;
 }
 
-.divider-row::before{
+.divider::before{
   content:"";
 
   position:absolute;
 
-  left:0;
   top:50%;
+  left:0;
 
   width:100%;
   height:1px;
 
-  background:rgba(255,255,255,.08);
+  background:#e7edf5;
 }
 
-.divider-row span{
+.divider span{
   position:relative;
-  z-index:2;
 
-  padding:0 16px;
+  background:white;
 
-  background:transparent;
+  padding:0 14px;
 
-  color:rgba(255,255,255,.35);
+  color:#96a2b2;
 
   font-size:11px;
 }
 
 /* SOCIAL */
 
-.social-row{
+.socials{
   display:flex;
   gap:14px;
 }
 
-.btn-social{
+.social-btn{
   flex:1;
 
-  height:54px;
+  height:56px;
 
-  border-radius:16px;
+  border-radius:18px;
 
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid var(--line);
 
-  background:
-    rgba(255,255,255,.04);
-
-  color:white;
+  background:white;
 
   cursor:pointer;
 
   font-size:13px;
   font-weight:600;
 
+  color:var(--navy);
+
   transition:.35s;
 }
 
-.btn-social:hover{
-  border-color:rgba(212,175,106,.25);
+.social-btn:hover{
+  transform:translateY(-3px);
 
-  transform:translateY(-2px);
+  border-color:var(--navy);
 }
 
 /* MESSAGE */
@@ -996,39 +778,19 @@ const loginApple = () => {
 }
 
 .error{
-  background:rgba(255,0,0,.08);
+  background:#fff2f2;
 
-  border:1px solid rgba(255,0,0,.12);
+  border:1px solid #ffdada;
 
-  color:#ffb8b8;
+  color:#d94c4c;
 }
 
 .success{
-  background:rgba(0,255,120,.08);
+  background:#eefcf4;
 
-  border:1px solid rgba(0,255,120,.12);
+  border:1px solid #caf2da;
 
-  color:#a8ffd0;
-}
-
-/* FOOTER */
-
-.auth-footer{
-  margin-top:38px;
-
-  text-align:center;
-
-  color:rgba(255,255,255,.35);
-
-  font-size:11px;
-
-  line-height:1.8;
-}
-
-.auth-footer a{
-  color:var(--gold);
-
-  text-decoration:none;
+  color:#1c8b54;
 }
 
 /* LOADER */
@@ -1039,8 +801,8 @@ const loginApple = () => {
 
   border-radius:50%;
 
-  border:2px solid rgba(0,0,0,.2);
-  border-top-color:#111;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:white;
 
   margin:auto;
 
@@ -1053,56 +815,36 @@ const loginApple = () => {
   }
 }
 
-/* TRANSITION */
-
-.page-slide-enter-active,
-.page-slide-leave-active{
-  transition:.35s ease;
-}
-
-.page-slide-enter-from{
-  opacity:0;
-  transform:translateY(15px);
-}
-
-.page-slide-leave-to{
-  opacity:0;
-  transform:translateY(-15px);
-}
-
-/* MOBILE */
+/* RESPONSIVE */
 
 @media(max-width:1100px){
+
+  .auth-wrapper{
+    grid-template-columns:1fr;
+
+    margin-top:120px;
+  }
 
   .auth-visual{
     display:none;
   }
-
-  .auth-panel{
-    flex:1;
-  }
 }
 
-@media(max-width:600px){
+@media(max-width:700px){
 
   .auth-panel{
     padding:20px;
   }
 
-  .auth-inner{
-    padding:32px 24px;
+  .auth-box{
+    padding:34px 24px;
   }
 
-  .auth-logo{
-    font-size:44px;
-    letter-spacing:10px;
-  }
-
-  .social-row{
+  .socials{
     flex-direction:column;
   }
 
-  .visual-title{
+  .visual-content h1{
     font-size:58px;
   }
 }

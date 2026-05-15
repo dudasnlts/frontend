@@ -231,11 +231,13 @@ function irParaProduto(p){
 }
 
 const goLogin = () => {
+  debugger;
   console.log("clicou no user icon")
 
-  const user = JSON.parse(localStorage.getItem("user"))
+  const user = JSON.parse(localStorage.getItem("user")) //Campo vazio, não está sendo salvo info no login
   router.push(user ? "/perfil" : "/login")
 }
+
 const goCart = () => router.push("/carrinho")
 
 onMounted(() => {

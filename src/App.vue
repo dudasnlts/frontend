@@ -1,22 +1,21 @@
 <template>
-  <NavBar v-if="$route.meta && $route.meta.showNav" />
+  <NavBar v-if="route.meta?.showNav" />
 
   <router-view />
 
-  <Footer v-if="$route.meta && $route.meta.showNav" />
+  <Footer v-if="route.meta?.showNav" />
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { useRoute } from "vue-router"
+
 import NavBar from "./components/NavBar.vue"
 import Footer from "./components/Footer.vue"
-
 
 const route = useRoute()
 </script>
 
 <style>
-
 :root {
   --base-font-size: 16px;
 }
